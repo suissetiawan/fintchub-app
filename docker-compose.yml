@@ -3,8 +3,7 @@ services:
     image: suistwn/fincthub-api:latest
     container_name: fincthub-api
     restart: always
-    ports:
-      - "5000:5000"
+    # Ports removal: Traffic now flows through UI (Port 3000) -> Nginx -> API (5000)
     env_file:
       - .env
     networks:

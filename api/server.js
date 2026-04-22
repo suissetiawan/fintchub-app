@@ -16,14 +16,7 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: [
-    'http://localhost:3000', 
-    'http://localhost:5173', 
-    'http://localhost:5001', 
-    'http://localhost:5000',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:3000'
-  ],
+  origin: '*', // Di produksi aman karena dibatasi oleh Nginx Proxy
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

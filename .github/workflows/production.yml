@@ -34,8 +34,7 @@ jobs:
         with:
           context: ./ui
           push: true
-          build-args: |
-            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          # VITE_API_BASE_URL removed (using Reverse Proxy)
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-ui:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-ui:${{ github.sha }}

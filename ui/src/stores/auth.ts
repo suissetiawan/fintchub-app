@@ -151,7 +151,7 @@ export const useAuthStore = defineStore('auth', {
     async checkSetupStatus() {
       try {
         const response = await api.get('/auth/setup-check')
-        this.usersExist = response.data.response.usersExist
+        this.usersExist = response?.data?.response?.usersExist ?? true
         return this.usersExist
       } catch (error) {
         console.error('Setup check failed:', error)
