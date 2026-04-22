@@ -1,0 +1,86 @@
+name: CD - Production Release (Main)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push API (Prod)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-api:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fincthub-api:latest
+          cache-to: type=inline
+
+      - name: Build and Push UI (Prod)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ui
+          push: true
+          build-args: |
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-ui:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-ui:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fincthub-ui:latest
+          cache-to: type=inline
+
+  deploy-production:
+    needs: build-and-push-production
+    runs-on: ubuntu-latest
+    env:
+      APP_DIR: /home/deploy/apps/fincthub-app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:github-action
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Deploy on VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << EOF
+              set -e
+              cd ${{ env.APP_DIR }}
+              
+              # Update docker-compose file if changed
+              # Note: For production, we pull the specific GITHUB_SHA or latest
+              
+              echo "📥 Pulling latest images..."
+              docker compose pull
+
+              echo "🔄 Restarting containers..."
+              docker compose up -d
+
+              echo "✅ Cleaning up old images..."
+              docker image prune -f
+              
+              echo "✅ Production Deployment finished"
+              docker compose ps
+          EOF

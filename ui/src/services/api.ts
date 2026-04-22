@@ -15,7 +15,6 @@ export const setupInterceptors = (authStore: any) => {
       if (authStore.accessToken) {
         config.headers.Authorization = `Bearer ${authStore.accessToken}`
       }
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`)
       return config
     },
     (error) => Promise.reject(error),
@@ -30,7 +29,6 @@ export const setupInterceptors = (authStore: any) => {
           data: { message: 'Method not allowed' },
         })
       }
-      console.log(`[API Response Success] ${response.config.url}`)
       return response
     },
     async (error) => {
@@ -39,7 +37,6 @@ export const setupInterceptors = (authStore: any) => {
 
       // Silently ignore 405 errors for auth endpoints (GET requests)
       if (status === 405 && url?.includes('/auth/')) {
-        console.log(`[API] Ignoring 405 for GET request to ${url}`)
         return Promise.resolve({
           data: { message: 'Method not allowed' },
           status: 405,
@@ -47,8 +44,6 @@ export const setupInterceptors = (authStore: any) => {
           config: error.config,
         })
       }
-
-      console.log(`[API Response Error] ${url} - Status: ${status}`)
 
       const originalRequest = error.config
       const isAuthRequest = originalRequest?.url?.includes('/auth/')
@@ -62,9 +57,7 @@ export const setupInterceptors = (authStore: any) => {
       ) {
         originalRequest._retry = true
         try {
-          console.log('[API] Attempting token refresh...')
           await authStore.refreshTokenAction()
-          console.log('[API] Token refresh successful, retrying request...')
           return api(originalRequest)
         } catch (refreshError) {
           console.error('[API] Token refresh failed, logging out...')

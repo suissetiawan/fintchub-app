@@ -1,0 +1,57 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: fincthub-db-local
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: fincthub_test
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - fincthub-local
+
+  api:
+    build:
+      context: ./api
+    container_name: fincthub-api-local
+    ports:
+      - "5001:5000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=user
+      - DB_PASS=password
+      - DB_NAME=fincthub_test
+      - PORT=5000
+      - RUN_MIGRATIONS=true
+      - RUN_SEEDS=true
+    depends_on:
+      - db
+    networks:
+      - fincthub-local
+
+  ui:
+    build:
+      context: ./ui
+      args:
+        - VITE_API_BASE_URL=http://localhost:5001
+    container_name: fincthub-ui-local
+    ports:
+      - "3000:3000"
+    networks:
+      - fincthub-local
+
+networks:
+  fincthub-local:
+    driver: bridge
+
+volumes:
+  db_data:

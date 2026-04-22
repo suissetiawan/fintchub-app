@@ -7,12 +7,20 @@
       <ThemeToggler />
     </div>
 
+    <!-- Brand Logo & Title (Moved Outside) -->
+    <div class="flex items-center justify-center gap-2.5 mb-6">
+      <div class="bg-blue-600 p-1.5 rounded-lg shadow-lg shadow-blue-200 dark:shadow-none animate-bounce-subtle">
+        <Wallet class="w-5 h-5 text-white" />
+      </div>
+      <span class="text-2xl font-black tracking-tight text-gray-900 dark:text-white uppercase">Fincthub</span>
+    </div>
+
     <div
       class="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
     >
-      <div class="text-center mb-8 sm:mb-10">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
-        <p class="text-sm sm:text-base text-gray-500 mt-2 dark:text-gray-400">Log in to your account</p>
+      <div class="text-center mb-6 sm:mb-8">
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1 dark:text-gray-400">Log in to your account</p>
       </div>
 
       <form @submit.prevent="handleLogin" class="space-y-5 sm:space-y-6">
@@ -29,17 +37,27 @@
           />
         </div>
 
-        <div>
+        <div class="relative">
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2"
             >Password</label
           >
-          <input
-            v-model="form.password"
-            type="password"
-            required
-            class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-            placeholder="••••••••"
-          />
+          <div class="relative">
+            <input
+              v-model="form.password"
+              :type="showPassword ? 'text' : 'password'"
+              required
+              class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white pr-10 sm:pr-12"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              @click="showPassword = !showPassword"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none"
+            >
+              <Eye v-if="!showPassword" class="w-5 h-5 sm:w-6 sm:h-6" />
+              <EyeOff v-else class="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          </div>
         </div>
 
         <button
@@ -58,6 +76,11 @@
         >
       </div>
     </div>
+
+    <!-- Extra page footer -->
+    <div class="mt-6 text-gray-400 text-xs dark:text-gray-600 font-medium tracking-wide">
+      &copy; 2026 Fincthub App. All rights reserved.
+    </div>
   </div>
 </template>
 
@@ -65,6 +88,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { Eye, EyeOff, Wallet } from 'lucide-vue-next'
 import ThemeToggler from '@/components/common/ThemeToggler.vue'
 
 const router = useRouter()
@@ -76,6 +100,7 @@ const form = ref({
 })
 
 const loading = ref(false)
+const showPassword = ref(false)
 
 const handleLogin = async () => {
   loading.value = true

@@ -137,6 +137,30 @@ const deleteTransaction = async (req, res) => {
   }
 };
 
+const getTransactionById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const transaction = await Transaction.findOne({
+      where: { id, userId: req.user.id },
+      include: [{ model: Category, as: 'category', attributes: ['name', 'type'] }],
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    const formatted = {
+      ...transaction.toJSON(),
+      category: transaction.category ? transaction.category.name : 'Uncategorized',
+    };
+
+    res.json({ response: formatted });
+  } catch (error) {
+    console.error('Fetch transaction detail error:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 /** Shared colors for the breakdown chart */
 const COLORS = [
   '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', 
@@ -203,6 +227,7 @@ module.exports = {
   createTransaction,
   updateTransaction,
   deleteTransaction,
+  getTransactionById,
   getDashboardSummary,
   getDashboardBreakdown
 };

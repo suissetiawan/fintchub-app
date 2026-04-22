@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
@@ -14,7 +15,19 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000', 
+    'http://localhost:5173', 
+    'http://localhost:5001', 
+    'http://localhost:5000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -39,14 +52,26 @@ const startServer = async () => {
   try {
     await sequelize.authenticate();
     console.log('Database connection successful.');
-    
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      const address = server.address();
+      const host = typeof address === 'string' ? address : address?.address;
+      const port = typeof address === 'string' ? '' : address?.port;
+      console.log(`Server is running on http://${host}:${port}`);
     });
   } catch (error) {
     console.error('Unable to connect to the database:', error.message);
     process.exit(1);
   }
 };
+
+// Diagnostic logs for unexpected exit
+process.on('exit', (code) => {
+  console.log(`[Diagnostic] Process is exiting with code: ${code}`);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Diagnostic] Unhandled Rejection at:', promise, 'reason:', reason);
+});
 
 startServer();

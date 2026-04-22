@@ -20,9 +20,4 @@ export const getFontSizeClass = (amount: number, baseClass: string = 'text-2xl')
   return baseClass
 }
 
-export const getTextFontSizeClass = (text: string, baseClass: string = 'text-base'): string => {
-  const length = text?.length || 0
-  if (length > 25) return 'text-xs'
-  if (length > 18) return 'text-sm'
-  return baseClass
-}
+

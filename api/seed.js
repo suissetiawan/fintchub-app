@@ -3,7 +3,7 @@
  * 
  * Usage: node seed.js
  */
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 

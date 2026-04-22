@@ -18,14 +18,13 @@
       >
         <component :is="transaction.type === 'INCOME' ? ArrowDownLeft : ArrowUpRight" :size="20" />
       </div>
-      <div>
+      <div class="flex-1 min-w-0">
         <p
-          :class="getTextFontSizeClass(transaction.description, 'font-medium')"
-          class="text-gray-900 dark:text-white leading-tight transition-all"
+          class="text-sm sm:text-base font-medium text-gray-900 dark:text-white leading-tight truncate transition-all"
         >
           {{ transaction.description }}
         </p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
           {{ transaction.category }} • {{ formatDate(transaction.date) }}
         </p>
       </div>
@@ -46,7 +45,7 @@
 
 <script setup lang="ts">
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-vue-next'
-import { getFontSizeClass, getTextFontSizeClass } from '@/utils/amountHelper'
+import { getFontSizeClass } from '@/utils/amountHelper'
 import type { Transaction } from '@/stores/transaction'
 
 const props = withDefaults(

@@ -1,5 +1,5 @@
 {
-  "name": "fincthub-monorepo",
+  "name": "fincthub-app",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
@@ -10,7 +10,13 @@
     "install:all": "npm install",
     "dev:api": "npm run dev --workspace=api",
     "dev:ui": "npm run dev --workspace=ui",
-    "dev": "concurrently \"npm run dev:api\" \"npm run dev:ui\""
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:ui\"",
+    "db:migrate": "npm run migrate --workspace=api",
+    "db:seed": "npm run seed --workspace=api",
+    "db:reset": "npm run migrate:undo:all --workspace=api && npm run db:migrate && npm run db:seed",
+    "lint:all": "npm run lint --workspace=api && npm run lint --workspace=ui",
+    "format:all": "prettier --write \"**/*.{js,ts,vue,json,md}\"",
+    "type-check:all": "npm run type-check --workspace=ui"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

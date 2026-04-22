@@ -1,0 +1,39 @@
+name: CD - Staging Release (Develop)
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-and-push-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push API (Dev)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-api:dev
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fincthub-api:dev
+          cache-to: type=inline
+
+      - name: Build and Push UI (Dev)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ui
+          push: true
+          build-args: |
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL_DEV || secrets.VITE_API_BASE_URL }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fincthub-ui:dev
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fincthub-ui:dev
+          cache-to: type=inline
