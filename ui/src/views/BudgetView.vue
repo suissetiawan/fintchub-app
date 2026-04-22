@@ -1,0 +1,275 @@
+<template>
+  <div class="space-y-5">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Budget</h1>
+      <div class="flex items-center gap-2">
+        <button
+          @click="confirmAutoGenerate"
+          class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95 text-sm sm:text-base"
+          title="Salin dari bulan lalu"
+        >
+          <Sparkles :size="18" /> Auto Generate
+        </button>
+        <button
+          @click="openAddDrawer"
+          class="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all text-sm sm:text-base"
+        >
+          <Plus :size="20" /> Tambah Budget
+        </button>
+      </div>
+    </div>
+
+    <!-- Month/Year filter -->
+    <div class="flex gap-2 items-center flex-wrap">
+      <span class="text-sm text-gray-500 dark:text-gray-400">Periode:</span>
+      <select
+        v-model="selectedMonth"
+        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 dark:text-white text-sm font-medium"
+      >
+        <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
+      </select>
+      <select
+        v-model="selectedYear"
+        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 dark:text-white text-sm font-medium"
+      >
+        <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+      </select>
+    </div>
+
+    <div v-if="budgetStore.loading && budgetStore.budgets.length === 0" class="py-20 text-center">
+      <div class="inline-block h-10 w-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin dark:border-gray-800"></div>
+      <p class="mt-4 text-gray-500 dark:text-gray-400">Memuat budget...</p>
+    </div>
+
+    <div v-else-if="filteredBudgetsWithUsage.length > 0" class="space-y-4">
+      <div
+        v-for="b in filteredBudgetsWithUsage"
+        :key="b.id"
+        class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-bold text-gray-900 dark:text-white">{{ b.categoryName }}</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              Rp {{ formatNumber(b.used) }} / Rp {{ formatNumber(b.amount) }}
+            </p>
+            <div class="mt-2 h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+              <div
+                :class="[
+                  'h-full rounded-full transition-all',
+                  b.status === 'exceeded'
+                    ? 'bg-red-500'
+                    : b.status === 'warning'
+                      ? 'bg-amber-500'
+                      : 'bg-green-500',
+                ]"
+                :style="{ width: Math.min(b.percentUsed, 100) + '%' }"
+              />
+            </div>
+            <div class="mt-2 flex items-center gap-2 flex-wrap">
+              <span
+                :class="[
+                  'text-xs font-bold px-2 py-0.5 rounded-full',
+                  b.status === 'exceeded'
+                    ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
+                    : b.status === 'warning'
+                      ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30'
+                      : 'bg-green-100 text-green-600 dark:bg-green-900/30',
+                ]"
+              >
+                {{ statusLabel(b.status) }}
+              </span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                Sisa: Rp {{ formatNumber(b.remaining) }}
+              </span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button
+              @click="openEditDrawer(b)"
+              class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400"
+              title="Edit"
+            >
+              <Edit2 :size="18" />
+            </button>
+            <button
+              @click="confirmDelete(b)"
+              class="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
+              title="Hapus"
+            >
+              <Trash2 :size="18" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      v-else
+      class="py-16 sm:py-20 flex flex-col items-center bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800"
+    >
+      <div class="p-5 bg-gray-50 dark:bg-gray-800 rounded-full mb-4">
+        <Wallet :size="40" class="text-gray-400" />
+      </div>
+      <h3 class="font-bold text-gray-900 dark:text-white">Belum ada budget</h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 text-center max-w-xs">
+        Buat budget per kategori untuk memantau pengeluaran Anda
+      </p>
+      <button
+        @click="openAddDrawer"
+        class="mt-6 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+      >
+        Tambah Budget
+      </button>
+    </div>
+
+    <BudgetFormDrawer
+      :is-open="isDrawerOpen"
+      :budget="selectedBudget"
+      :month="selectedMonth"
+      :year="selectedYear"
+      @close="closeDrawer"
+      @saved="onSaved"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
+import { Plus, Edit2, Trash2, Wallet, Sparkles } from 'lucide-vue-next'
+import { useBudgetStore, type BudgetWithUsage } from '@/stores/budget'
+import { useCategoryStore } from '@/stores/category'
+import { useTransactionStore } from '@/stores/transaction'
+import { useUiStore } from '@/stores/ui'
+import BudgetFormDrawer from '@/components/budget/BudgetFormDrawer.vue'
+
+const uiStore = useUiStore()
+
+const budgetStore = useBudgetStore()
+const categoryStore = useCategoryStore()
+const transactionStore = useTransactionStore()
+
+const now = new Date()
+const selectedMonth = ref(String(now.getMonth() + 1).padStart(2, '0'))
+const selectedYear = ref(String(now.getFullYear()))
+
+const months = [
+  { value: '01', label: 'Januari' },
+  { value: '02', label: 'Februari' },
+  { value: '03', label: 'Maret' },
+  { value: '04', label: 'April' },
+  { value: '05', label: 'Mei' },
+  { value: '06', label: 'Juni' },
+  { value: '07', label: 'Juli' },
+  { value: '08', label: 'Agustus' },
+  { value: '09', label: 'September' },
+  { value: '10', label: 'Oktober' },
+  { value: '11', label: 'November' },
+  { value: '12', label: 'Desember' },
+]
+const years = computed(() => {
+  const y = now.getFullYear()
+  return [y, y - 1, y - 2]
+})
+
+const filteredBudgetsWithUsage = computed(() => {
+  return budgetStore.budgetsWithUsage.filter(
+    (b) => b.month === selectedMonth.value && b.year === selectedYear.value
+  )
+})
+
+const isDrawerOpen = ref(false)
+const selectedBudget = ref<BudgetWithUsage | null>(null)
+
+watch(
+  [selectedMonth, selectedYear],
+  () => {
+    budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
+    transactionStore.fetchExpensesByCategoryForMonth(selectedMonth.value, selectedYear.value)
+  },
+  { immediate: false }
+)
+
+function openAddDrawer() {
+  selectedBudget.value = null
+  isDrawerOpen.value = true
+}
+
+function openEditDrawer(b: BudgetWithUsage) {
+  selectedBudget.value = b
+  isDrawerOpen.value = true
+}
+
+function closeDrawer() {
+  isDrawerOpen.value = false
+  selectedBudget.value = null
+}
+
+function onSaved() {
+  closeDrawer()
+  budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
+}
+
+function confirmDelete(b: BudgetWithUsage) {
+  if (!confirm(`Hapus budget "${b.categoryName}"?`)) return
+  budgetStore.deleteBudget(b.id).then(() => {
+    budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
+  })
+}
+
+async function confirmAutoGenerate() {
+  const mIndex = months.findIndex((m) => m.value === selectedMonth.value)
+  let prevMonth = ''
+  let prevYear = selectedYear.value
+
+  if (mIndex === 0) {
+    prevMonth = '12'
+    prevYear = String(parseInt(selectedYear.value) - 1)
+  } else {
+    prevMonth = months[mIndex - 1].value
+  }
+
+  const sourceName = `${months.find((m) => m.value === prevMonth)?.label} ${prevYear}`
+  const targetName = `${months.find((m) => m.value === selectedMonth.value)?.label} ${selectedYear.value}`
+
+  if (
+    !confirm(
+      `Salin semua pengaturan budget dari ${sourceName} ke ${targetName}?\n\nBudget yang sudah ada tidak akan ditimpa.`
+    )
+  )
+    return
+
+  try {
+    const result = await budgetStore.autoGenerateBudgets({
+      sourceMonth: prevMonth,
+      sourceYear: prevYear,
+      targetMonth: selectedMonth.value,
+      targetYear: selectedYear.value,
+    })
+
+    if (result.count === 0) {
+      alert('Tidak ada budget baru yang perlu dibuat (semua sudah ada).')
+    } else {
+      alert(`Berhasil membuat ${result.count} budget baru untuk ${targetName}.`)
+    }
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Gagal generate budget.')
+  }
+}
+
+function formatNumber(num: number) {
+  return new Intl.NumberFormat('id-ID').format(num)
+}
+
+function statusLabel(status: string) {
+  if (status === 'exceeded') return 'Melebihi'
+  if (status === 'warning') return 'Hampir habis'
+  return 'Aman'
+}
+
+onMounted(() => {
+  categoryStore.fetchCategories()
+  budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
+  transactionStore.fetchExpensesByCategoryForMonth(selectedMonth.value, selectedYear.value)
+})
+</script>

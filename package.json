@@ -1,0 +1,18 @@
+{
+  "name": "fincthub-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "api",
+    "ui"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev:api": "npm run dev --workspace=api",
+    "dev:ui": "npm run dev --workspace=ui",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:ui\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
