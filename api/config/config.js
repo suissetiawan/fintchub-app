@@ -1,4 +1,6 @@
 const path = require('path');
+// Coba load .env dari root folder (../../.env) atau dari folder api (../.env)
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 module.exports = {
