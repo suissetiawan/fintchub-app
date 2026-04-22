@@ -24,3 +24,8 @@ const authStore = useAuthStore(pinia)
 setupInterceptors(authStore)
 
 app.mount('#app')
+
+// Remove splash screen after the app has mounted
+setTimeout(() => {
+  document.body.classList.add('app-loaded')
+}, 500)

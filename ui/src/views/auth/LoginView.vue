@@ -9,8 +9,8 @@
 
     <!-- Brand Logo & Title (Moved Outside) -->
     <div class="flex items-center justify-center gap-2.5 mb-6">
-      <div class="bg-blue-600 p-1.5 rounded-lg shadow-lg shadow-blue-200 dark:shadow-none animate-bounce-subtle">
-        <Wallet class="w-5 h-5 text-white" />
+      <div class="w-10 h-10 rounded-xl bg-blue-600 dark:bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none animate-bounce-subtle shrink-0">
+        <Wallet class="w-6 h-6 text-white" />
       </div>
       <span class="text-2xl font-black tracking-tight text-gray-900 dark:text-white uppercase">Fincthub</span>
     </div>

@@ -3,11 +3,11 @@
     class="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 w-[240px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50"
   >
     <!-- Logo -->
-    <div class="flex items-center gap-2.5 px-5 h-16 border-b border-gray-100 dark:border-gray-800">
-      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-        <Wallet :size="18" class="text-white" />
+    <div class="flex items-center gap-3 px-5 h-16 border-b border-gray-100 dark:border-gray-800">
+      <div class="w-9 h-9 rounded-xl bg-blue-600 dark:bg-blue-500 flex items-center justify-center shrink-0 shadow-sm shadow-blue-200 dark:shadow-none">
+        <Wallet class="w-5 h-5 text-white" />
       </div>
-      <span class="font-bold text-lg text-gray-900 dark:text-white">Fincthub</span>
+      <span class="font-bold text-xl text-gray-900 dark:text-white tracking-tight">Fincthub</span>
     </div>
 
     <!-- Navigation -->
