@@ -13,7 +13,7 @@ export default defineConfig({
     vueDevTools(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['plain_logo.png', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'Fincthub',
         short_name: 'Fincthub',
@@ -25,12 +25,12 @@ export default defineConfig({
         categories: ['finance', 'productivity'],
         icons: [
           {
-            src: 'dark-mode-transparent.png',
+            src: 'plain_logo.png',
             sizes: '1024x1024',
             type: 'image/png'
           },
           {
-            src: 'dark-mode-transparent.png',
+            src: 'plain_logo.png',
             sizes: '1024x1024',
             type: 'image/png',
             purpose: 'any maskable'
