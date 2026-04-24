@@ -51,7 +51,7 @@
           class="font-black text-gray-900 dark:text-white transition-all text-center"
         >
           {{ detailTransaction.type === 'INCOME' ? '+' : '-' }} Rp
-          {{ formatNumber(detailTransaction.amount) }}
+          {{ formatNumber(detailTransaction.amount, true) }}
         </h3>
         <p
           class="text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-1 transition-all text-center px-4"
@@ -299,7 +299,7 @@ watch(filteredCategories, (newCats) => {
 });
 
 const formattedAmount = computed(() => {
-  return formatNumber(form.value.amount);
+  return formatNumber(form.value.amount, true);
 });
 
 const isValid = computed(() => {

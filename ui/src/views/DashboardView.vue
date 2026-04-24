@@ -161,7 +161,7 @@
     <!-- Floating Action Button -->
     <button
       @click="openNewTransaction"
-      class="fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+      class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
     >
       <Plus :size="24" />
     </button>

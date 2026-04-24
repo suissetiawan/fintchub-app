@@ -57,7 +57,7 @@
           ]"
           class="font-bold transition-all"
         >
-          Rp {{ formatNumber(monthlyIncome) }}
+          Rp {{ formatNumber(monthlyIncome, true) }}
         </p>
       </div>
       <div
@@ -68,7 +68,7 @@
           :class="[getFontSizeClass(monthlyExpense, 'text-lg'), 'text-red-700 dark:text-red-300']"
           class="font-bold transition-all"
         >
-          Rp {{ formatNumber(monthlyExpense) }}
+          Rp {{ formatNumber(monthlyExpense, true) }}
         </p>
       </div>
     </div>
@@ -87,6 +87,7 @@
           v-for="t in transactionStore.transactions"
           :key="t.id"
           :transaction="t"
+          :mask="false"
           @click="openDetails(t)"
         />
       </template>
@@ -132,7 +133,7 @@
     <!-- Floating Action Button -->
     <button
       @click="openNewTransaction"
-      class="fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+      class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
     >
       <Plus :size="24" />
     </button>
@@ -153,7 +154,7 @@ import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { SearchX, ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-vue-next'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
-import { formatNumber } from '@/utils/amountHelper'
+import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
 
 const transactionStore = useTransactionStore()
 

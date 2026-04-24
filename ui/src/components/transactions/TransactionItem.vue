@@ -37,7 +37,7 @@
         ]"
         class="font-bold transition-all"
       >
-        {{ transaction.type === 'INCOME' ? '+' : '-' }} {{ formatNumber(transaction.amount) }}
+        {{ transaction.type === 'INCOME' ? '+' : '-' }} {{ formatNumber(transaction.amount, !mask) }}
       </p>
     </div>
   </div>
@@ -52,9 +52,11 @@ const props = withDefaults(
   defineProps<{
     transaction: Transaction
     clickable?: boolean
+    mask?: boolean
   }>(),
   {
     clickable: true,
+    mask: true,
   },
 )
 

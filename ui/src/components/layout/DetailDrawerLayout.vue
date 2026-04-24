@@ -1,13 +1,13 @@
 <template>
-  <Transition name="slide-up">
+  <Transition name="drawer">
     <div v-if="isOpen" class="fixed inset-0 z-[60] flex items-end justify-center sm:items-center">
       <!-- Backdrop -->
-      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="close"></div>
+      <div class="absolute inset-0 bg-black/50 backdrop" @click="close"></div>
 
       <!-- Drawer Content -->
       <div
         :class="[
-          'relative w-full max-w-lg bg-white dark:bg-gray-950 rounded-t-[2.5rem] sm:rounded-3xl p-6 shadow-2xl transition-all overflow-y-auto',
+          'relative w-full max-w-lg bg-white dark:bg-gray-950 rounded-t-[2.5rem] sm:rounded-3xl p-6 shadow-2xl overflow-y-auto drawer-content',
           heightClass,
         ]"
       >
@@ -36,8 +36,9 @@
 
 <script setup lang="ts">
 import { X } from 'lucide-vue-next'
+import { watch, onUnmounted } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   isOpen: boolean
   title: string
   heightClass?: string
@@ -48,37 +49,56 @@ const emit = defineEmits(['close'])
 const close = () => {
   emit('close')
 }
+
+// Lock body scroll when drawer is open
+watch(
+  () => props.isOpen,
+  (val) => {
+    if (val) {
+      document.body.classList.add('overflow-hidden')
+    } else {
+      document.body.classList.remove('overflow-hidden')
+    }
+  },
+  { immediate: true },
+)
+
+onUnmounted(() => {
+  document.body.classList.remove('overflow-hidden')
+})
 </script>
 
 <style scoped>
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+/* Container transition (fade) */
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: opacity 0.5s ease;
 }
 
-.slide-up-enter-from,
-.slide-up-leave-to {
+.drawer-enter-from,
+.drawer-leave-to {
   opacity: 0;
-  transform: translateY(100%);
 }
 
-.slide-up-enter-to,
-.slide-up-leave-from {
-  opacity: 1;
-  transform: translateY(0);
+/* Content transition (slide up) */
+.drawer-enter-active .drawer-content {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+}
+
+.drawer-leave-active .drawer-content {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+.drawer-enter-from .drawer-content,
+.drawer-leave-to .drawer-content {
+  transform: translateY(100%);
+  opacity: 0;
 }
 
 @media (min-width: 640px) {
-  .slide-up-enter-from,
-  .slide-up-leave-to {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-
-  .slide-up-enter-to,
-  .slide-up-leave-from {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+  .drawer-enter-from .drawer-content,
+  .drawer-leave-to .drawer-content {
+    transform: scale(0.95) translateY(20px);
   }
 }
 </style>

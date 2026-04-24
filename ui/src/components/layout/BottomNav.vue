@@ -5,20 +5,20 @@
     <div class="flex items-center justify-around h-16">
       <router-link
         to="/"
-        class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-primary dark:text-gray-400"
-        active-class="text-blue-600 dark:text-blue-500"
+        class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
+        :class="isActive('/') ? 'text-blue-600 dark:text-blue-500 scale-110 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
-        <LayoutDashboard :size="20" />
-        <span class="text-xs mt-1">Home</span>
+        <LayoutDashboard :size="isActive('/') ? 22 : 20" />
+        <span class="text-[10px] mt-1">Home</span>
       </router-link>
 
       <router-link
         to="/transactions"
-        class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-primary dark:text-gray-400"
-        active-class="text-blue-600 dark:text-blue-500"
+        class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
+        :class="isActive('/transactions') ? 'text-blue-600 dark:text-blue-500 scale-110 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
-        <History :size="20" />
-        <span class="text-xs mt-1">History</span>
+        <History :size="isActive('/transactions') ? 22 : 20" />
+        <span class="text-[10px] mt-1">History</span>
       </router-link>
 
       <!-- FAB in Center -->
@@ -33,27 +33,35 @@
 
       <router-link
         to="/budget"
-        class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-primary dark:text-gray-400"
-        active-class="text-blue-600 dark:text-blue-500"
+        class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
+        :class="isActive('/budget') ? 'text-blue-600 dark:text-blue-500 scale-110 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
-        <Wallet :size="20" />
-        <span class="text-xs mt-1">Budget</span>
+        <Wallet :size="isActive('/budget') ? 22 : 20" />
+        <span class="text-[10px] mt-1">Budget</span>
       </router-link>
 
       <router-link
         to="/more"
-        class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-primary dark:text-gray-400"
-        active-class="text-blue-600 dark:text-blue-500"
+        class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
+        :class="isActive('/more') ? 'text-blue-600 dark:text-blue-500 scale-110 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
-        <MoreHorizontal :size="20" />
-        <span class="text-xs mt-1">More</span>
+        <MoreHorizontal :size="isActive('/more') ? 22 : 20" />
+        <span class="text-[10px] mt-1">More</span>
       </router-link>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
 import { LayoutDashboard, History, Plus, Wallet, MoreHorizontal } from 'lucide-vue-next'
 
+const route = useRoute()
+
 defineEmits(['add-transaction'])
+
+const isActive = (path: string) => {
+  if (path === '/') return route.path === '/'
+  return route.path.startsWith(path)
+}
 </script>

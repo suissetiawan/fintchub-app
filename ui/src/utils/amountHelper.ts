@@ -22,11 +22,11 @@ export const getFontSizeClass = (amount: number, baseClass: string = 'text-2xl')
 
 import { useSettingStore } from '@/stores/setting'
 
-export const formatNumber = (num: number): string => {
+export const formatNumber = (num: number, forceShow: boolean = false): string => {
   if (num === undefined || num === null || Number.isNaN(Number(num))) return ''
   try {
     const settingStore = useSettingStore()
-    if (settingStore.hideAmounts) {
+    if (settingStore.hideAmounts && !forceShow) {
       return '••••••'
     }
   } catch (e) {
