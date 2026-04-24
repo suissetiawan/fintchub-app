@@ -8,12 +8,13 @@
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <!-- Card 1: Total Balance -->
       <div
         class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
       >
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Total Balance</p>
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Total Balance</p>
             <h3
               :class="getFontSizeClass(dashboardStore.summary.balance)"
               class="font-bold mt-1 text-gray-900 dark:text-white"
@@ -27,31 +28,13 @@
         </div>
       </div>
 
+      <!-- Card 2: Total Expense (Bulan) -->
       <div
         class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
       >
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Income</p>
-            <h3
-              :class="[getFontSizeClass(dashboardStore.summary.income), 'text-green-600']"
-              class="font-bold mt-1"
-            >
-              Rp {{ formatNumber(dashboardStore.summary.income) }}
-            </h3>
-          </div>
-          <div class="p-3 bg-green-50 text-green-600 rounded-xl dark:bg-green-900/20">
-            <TrendingUp :size="24" />
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
-      >
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Expense</p>
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Total Expense</p>
             <h3
               :class="[getFontSizeClass(dashboardStore.summary.expense), 'text-red-600']"
               class="font-bold mt-1"
@@ -61,6 +44,26 @@
           </div>
           <div class="p-3 bg-red-50 text-red-600 rounded-xl dark:bg-red-900/20">
             <TrendingDown :size="24" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Daily Spending -->
+      <div
+        class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Daily Spending</p>
+            <h3
+              :class="[getFontSizeClass(dashboardStore.summary.dailySpending), 'text-orange-600']"
+              class="font-bold mt-1"
+            >
+              Rp {{ formatNumber(dashboardStore.summary.dailySpending) }}
+            </h3>
+          </div>
+          <div class="p-3 bg-orange-50 text-orange-600 rounded-xl dark:bg-orange-900/20">
+            <Calendar :size="24" />
           </div>
         </div>
       </div>
@@ -165,7 +168,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Wallet, TrendingUp, TrendingDown, ChevronRight, Plus } from 'lucide-vue-next'
+import { Wallet, TrendingDown, ChevronRight, Plus, Calendar } from 'lucide-vue-next'
 import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js'
 import { useDashboardStore } from '@/stores/dashboard'

@@ -172,20 +172,38 @@ const getDashboardSummary = async (req, res) => {
     const userId = req.user.id;
     const transactions = await Transaction.findAll({ where: { userId } });
 
-    let income = 0;
-    let expense = 0;
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let monthlyExpense = 0;
+    let dailySpending = 0;
+
+    const today = new Date();
+    const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+    const currentMonthStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
 
     transactions.forEach((t) => {
       const amt = parseFloat(t.amount);
-      if (t.type === 'INCOME') income += amt;
-      else expense += amt;
+      if (t.type === 'INCOME') {
+        totalIncome += amt;
+      } else {
+        totalExpense += amt;
+        
+        if (t.date && t.date.startsWith(currentMonthStr)) {
+          monthlyExpense += amt;
+        }
+
+        if (t.date && t.date.startsWith(todayStr)) {
+          dailySpending += amt;
+        }
+      }
     });
 
     res.json({
       response: {
-        balance: income - expense,
-        income,
-        expense
+        balance: totalIncome - totalExpense,
+        income: totalIncome,
+        expense: monthlyExpense,
+        dailySpending
       }
     });
   } catch (error) {
