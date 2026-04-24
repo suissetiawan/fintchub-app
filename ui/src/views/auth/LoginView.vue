@@ -9,10 +9,10 @@
 
     <!-- Brand Logo & Title (Moved Outside) -->
     <div class="flex items-center justify-center gap-2.5 mb-6">
-      <div class="w-10 h-10 rounded-xl bg-blue-600 dark:bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none animate-bounce-subtle shrink-0">
-        <Wallet class="w-6 h-6 text-white" />
+      <div class="w-10 h-10 flex items-center justify-center animate-bounce-subtle shrink-0">
+        <img src="/plain_logo.png" alt="Fincthub Logo" class="w-full h-full object-contain" />
       </div>
-      <span class="text-2xl font-black tracking-tight text-gray-900 dark:text-white uppercase">Fincthub</span>
+      <span class="text-2xl font-black tracking-wider text-gray-900 dark:text-white uppercase">Fincthub</span>
     </div>
 
     <div
@@ -88,7 +88,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { Eye, EyeOff, Wallet } from 'lucide-vue-next'
+import { Eye, EyeOff } from 'lucide-vue-next'
 import ThemeToggler from '@/components/common/ThemeToggler.vue'
 
 const router = useRouter()

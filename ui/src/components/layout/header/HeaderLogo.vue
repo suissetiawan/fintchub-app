@@ -1,9 +1,9 @@
 <template>
   <router-link to="/" class="flex items-center gap-3">
-    <div class="w-9 h-9 rounded-xl bg-blue-600 dark:bg-blue-500 flex items-center justify-center shrink-0 shadow-sm shadow-blue-200 dark:shadow-none">
-      <Wallet class="w-5 h-5 text-white" />
+    <div class="w-9 h-9 flex items-center justify-center shrink-0">
+      <img src="/plain_logo.png" alt="Fincthub Logo" class="w-full h-full object-contain" />
     </div>
-    <span class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
+    <span class="text-xl font-bold text-gray-900 dark:text-white tracking-wider">
       Fincthub
     </span>
   </router-link>
@@ -11,5 +11,4 @@
 
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { Wallet } from 'lucide-vue-next'
 </script>

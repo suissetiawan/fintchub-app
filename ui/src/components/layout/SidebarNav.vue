@@ -4,10 +4,10 @@
   >
     <!-- Logo -->
     <div class="flex items-center gap-3 px-5 h-16 border-b border-gray-100 dark:border-gray-800">
-      <div class="w-9 h-9 rounded-xl bg-blue-600 dark:bg-blue-500 flex items-center justify-center shrink-0 shadow-sm shadow-blue-200 dark:shadow-none">
-        <Wallet class="w-5 h-5 text-white" />
+      <div class="w-9 h-9 flex items-center justify-center shrink-0">
+        <img src="/plain_logo.png" alt="Fincthub Logo" class="w-full h-full object-contain" />
       </div>
-      <span class="font-bold text-xl text-gray-900 dark:text-white tracking-tight">Fincthub</span>
+      <span class="font-bold text-lg text-sp text-gray-900 dark:text-white tracking-wider uppercase">Fincthub</span>
     </div>
 
     <!-- Navigation -->
@@ -85,7 +85,6 @@ import { useRoute } from 'vue-router'
 import {
   LayoutDashboard,
   History,
-  Wallet,
   Tags,
   User,
   Users,
