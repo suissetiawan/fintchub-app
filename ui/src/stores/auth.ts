@@ -5,6 +5,7 @@ import { useUiStore } from './ui'
 interface User {
   id: number | string
   username: string
+  name: string
   email: string
   role: 'USER' | 'ADMIN'
 }
@@ -45,7 +46,15 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isLoggedIn: (state) => !!state.accessToken && state.accessToken !== 'undefined',
     isAdmin: (state) => state.user?.role === 'ADMIN',
-    displayName: (state) => (state.user?.username ? state.user.username : 'User'),
+    displayName: (state) => (state.user?.name ? state.user.name : state.user?.username || 'User'),
+    userInitials: (state) => {
+      const name = state.user?.name || state.user?.username || 'User'
+      const names = name.trim().split(/\s+/)
+      if (names.length >= 2) {
+        return (names[0][0] + names[names.length - 1][0]).toUpperCase()
+      }
+      return name.substring(0, 2).toUpperCase()
+    },
   },
   actions: {
     async login(credentials: any) {
@@ -65,7 +74,8 @@ export const useAuthStore = defineStore('auth', {
 
         this.user = {
           id: profile.id,
-          username: profile.name,
+          username: profile.username,
+          name: profile.name,
           email: profile.email,
           role: profile.role,
         }
@@ -124,20 +134,22 @@ export const useAuthStore = defineStore('auth', {
         uiStore.setLoading(false)
       }
     },
-    async updateProfile(data: { name?: string; email?: string }) {
+    async updateProfile(data: { name?: string; username?: string; email?: string }) {
       if (!this.user?.id) return
       const uiStore = useUiStore()
       uiStore.setLoading(true, 'Updating profile...')
       try {
         await api.put(`api/users/${this.user.id}`, {
-          name: data.name ?? this.user.username,
+          name: data.name ?? this.user.name,
+          username: data.username ?? this.user.username,
           email: data.email ?? this.user.email,
         })
         const resProfile = await api.get(`api/users/${this.user.id}`)
         const profile = resProfile.data.response
         this.user = {
           id: profile.id,
-          username: profile.name,
+          username: profile.username,
+          name: profile.name,
           email: profile.email,
           role: profile.role,
         }

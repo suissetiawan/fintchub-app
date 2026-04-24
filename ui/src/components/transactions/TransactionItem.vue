@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-vue-next'
-import { getFontSizeClass } from '@/utils/amountHelper'
+import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
 import type { Transaction } from '@/stores/transaction'
 
 const props = withDefaults(
@@ -60,9 +60,7 @@ const props = withDefaults(
 
 defineEmits(['click'])
 
-const formatNumber = (num: number) => {
-  return new Intl.NumberFormat('id-ID').format(num)
-}
+
 
 const formatDate = (dateStr: string) => {
   const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: '2-digit' }

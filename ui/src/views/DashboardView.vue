@@ -3,7 +3,17 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-      <span class="text-sm text-gray-500 dark:text-gray-400">{{ currentDate }}</span>
+      <div class="flex items-center gap-2">
+        <button
+          @click="settingStore.toggleHideAmounts()"
+          class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          title="Toggle visibility"
+        >
+          <Eye v-if="!settingStore.hideAmounts" :size="18" />
+          <EyeOff v-else :size="18" />
+        </button>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ currentDate }}</span>
+      </div>
     </div>
 
     <!-- Summary Cards -->
@@ -168,13 +178,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Wallet, TrendingDown, ChevronRight, Plus, Calendar } from 'lucide-vue-next'
+import { Wallet, TrendingDown, ChevronRight, Plus, Calendar, Eye, EyeOff } from 'lucide-vue-next'
 import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { useBudgetStore } from '@/stores/budget'
-import { getFontSizeClass } from '@/utils/amountHelper'
+import { useSettingStore } from '@/stores/setting'
+import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 
@@ -183,6 +194,7 @@ ChartJS.register(ArcElement, Title, Tooltip, Legend)
 const dashboardStore = useDashboardStore()
 const transactionStore = useTransactionStore()
 const budgetStore = useBudgetStore()
+const settingStore = useSettingStore()
 
 const isDrawerOpen = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)
@@ -216,9 +228,7 @@ const budgetOverview = computed(() => budgetStore.budgetsForCurrentMonth.slice(0
 
 const currentDate = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 
-const formatNumber = (num: number) => {
-  return new Intl.NumberFormat('id-ID').format(num)
-}
+
 
 const chartData = computed(() => ({
   labels: dashboardStore.breakdown.map((b) => b.category),

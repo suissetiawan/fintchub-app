@@ -20,4 +20,17 @@ export const getFontSizeClass = (amount: number, baseClass: string = 'text-2xl')
   return baseClass
 }
 
+import { useSettingStore } from '@/stores/setting'
 
+export const formatNumber = (num: number): string => {
+  if (num === undefined || num === null || Number.isNaN(Number(num))) return ''
+  try {
+    const settingStore = useSettingStore()
+    if (settingStore.hideAmounts) {
+      return '••••••'
+    }
+  } catch (e) {
+    // Fallback if pinia is not active yet
+  }
+  return new Intl.NumberFormat('id-ID').format(num)
+}

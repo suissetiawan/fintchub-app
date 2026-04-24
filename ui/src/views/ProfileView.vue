@@ -27,6 +27,12 @@
           </p>
         </div>
         <div class="space-y-1">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Full Name</p>
+          <p class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+            {{ authStore.user?.name }}
+          </p>
+        </div>
+        <div class="space-y-1">
           <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Account Role</p>
           <div
             class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-sm font-bold"
@@ -34,12 +40,7 @@
             {{ authStore.user?.role }}
           </div>
         </div>
-        <div class="space-y-1 col-span-full">
-          <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">User ID</p>
-          <p class="text-base sm:text-lg font-mono text-gray-600 dark:text-gray-400">
-            #{{ authStore.user?.id }}
-          </p>
-        </div>
+
       </div>
 
       <div class="pt-4 sm:pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-3">
@@ -121,7 +122,7 @@ const editForm = ref({ username: '', name: '', email: '' })
 const openEditDrawer = () => {
   editForm.value = {
     username: authStore.user?.username ?? '',
-    name: authStore.user?.username ?? '',
+    name: authStore.user?.name ?? '',
     email: authStore.user?.email ?? '',
   }
   isEditDrawerOpen.value = true
@@ -135,7 +136,11 @@ watch(
   () => authStore.user,
   (user) => {
     if (user && isEditDrawerOpen.value) {
-      editForm.value = { username: user.username, name: user.username, email: user.email }
+      editForm.value = { 
+        username: user.username, 
+        name: user.name || user.username, 
+        email: user.email 
+      }
     }
   },
   { deep: true }
@@ -144,6 +149,7 @@ watch(
 const handleSaveProfile = async () => {
   try {
     await authStore.updateProfile({
+      username: editForm.value.username,
       name: editForm.value.name,
       email: editForm.value.email,
     })

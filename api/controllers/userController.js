@@ -37,7 +37,8 @@ const getUserById = async (req, res) => {
     res.json({
       response: {
         id: user.id,
-        name: user.username || user.email,
+        username: user.username,
+        name: user.name || user.username || user.email,
         email: user.email,
         role: user.role,
       },
@@ -67,7 +68,7 @@ const updateUserById = async (req, res) => {
 
     const { name, username, email, role, password } = req.body;
     const updates = {};
-    if (name !== undefined) updates.username = name;
+    if (name !== undefined) updates.name = name;
     if (username !== undefined) updates.username = username;
     if (email !== undefined) updates.email = email;
     if (role !== undefined && isAdmin) updates.role = role;
@@ -82,7 +83,8 @@ const updateUserById = async (req, res) => {
       message: 'User updated',
       response: {
         id: userJson.id,
-        name: userJson.username || userJson.email,
+        username: userJson.username,
+        name: userJson.name || userJson.username || userJson.email,
         email: userJson.email,
         role: userJson.role,
       },
@@ -118,7 +120,8 @@ const getProfile = async (req, res) => {
     res.json({
       response: {
         id: user.id,
-        name: user.username || user.email,
+        username: user.username,
+        name: user.name || user.username || user.email,
         email: user.email,
         role: user.role,
       },

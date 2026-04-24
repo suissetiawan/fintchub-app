@@ -57,6 +57,11 @@ const router = createRouter({
           component: () => import('@/views/auth/UsersView.vue'),
           meta: { isAdmin: true },
         },
+        {
+          path: 'settings',
+          name: 'settings',
+          component: () => import('@/views/SettingsView.vue'),
+        },
       ],
     },
   ],

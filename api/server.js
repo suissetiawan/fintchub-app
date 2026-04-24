@@ -11,6 +11,7 @@ const transactionRoutes = require('./routes/transactionRoutes');
 const userRoutes = require('./routes/userRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const settingRoutes = require('./routes/settingRoutes');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/settings', settingRoutes);
 
 // Root route
 app.get('/', (req, res) => {

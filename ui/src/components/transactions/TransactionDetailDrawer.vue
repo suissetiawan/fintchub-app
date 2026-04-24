@@ -200,7 +200,7 @@ import { ref, watch, onMounted, computed } from 'vue';
 import { ArrowDownLeft, ArrowUpRight, Edit2, Trash2, ChevronDown, Plus } from 'lucide-vue-next';
 import { useTransactionStore, type Transaction } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
-import { getFontSizeClass } from '@/utils/amountHelper';
+import { getFontSizeClass, formatNumber } from '@/utils/amountHelper';
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue';
 import BaseButton from '@/components/common/BaseButton.vue';
 
@@ -305,11 +305,6 @@ const formattedAmount = computed(() => {
 const isValid = computed(() => {
   return form.value.amount > 0 && form.value.description && form.value.category && form.value.date;
 });
-
-const formatNumber = (num: number) => {
-  if (!num && num !== 0) return '';
-  return new Intl.NumberFormat('id-ID').format(num);
-};
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '';

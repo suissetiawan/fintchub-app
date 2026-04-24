@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { User, Tags, Wallet, Users, ChevronRight } from 'lucide-vue-next'
+import { User, Tags, Wallet, Users, ChevronRight, Settings } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -39,6 +39,7 @@ const menuItems = computed(() => {
     { href: '/profile', icon: User, text: 'Profile', description: 'Edit profil & keluar' },
     { href: '/categories', icon: Tags, text: 'Categories', description: 'Kelola kategori' },
     { href: '/budget', icon: Wallet, text: 'Budget', description: 'Budget & monitoring' },
+    { href: '/settings', icon: Settings, text: 'Settings', description: 'Pengaturan & preferensi' },
   ]
   if (authStore.isAdmin) {
     items.push({

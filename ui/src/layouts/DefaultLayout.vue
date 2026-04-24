@@ -31,15 +31,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import SidebarNav from '@/components/layout/SidebarNav.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import BottomNav from '@/components/layout/BottomNav.vue'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
+import { useSettingStore } from '@/stores/setting'
 
+const settingStore = useSettingStore()
 const showAddDrawer = ref(false)
 
 const handleOpenAddModal = () => {
   showAddDrawer.value = true
 }
+
+onMounted(() => {
+  settingStore.fetchSettings()
+})
 </script>

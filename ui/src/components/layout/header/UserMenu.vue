@@ -1,113 +1,123 @@
 <template>
-  <div class="relative" ref="dropdownRef">
-    <button
-      class="flex items-center text-gray-700 dark:text-gray-400"
-      @click.prevent="toggleDropdown"
-    >
-      <span
-        class="mr-3 overflow-hidden rounded-full h-11 w-11 bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+  <div class="relative" ref="menuRef">
+    <div class="flex items-center gap-3">
+      <!-- User Button -->
+      <button
+        @click="isOpen = !isOpen"
+        class="flex items-center gap-3 p-1.5 pr-4 rounded-full border border-gray-100 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20"
       >
-        <UserCircleIcon :size="32" class="text-gray-400" />
-      </span>
-
-      <span class="block mr-1 font-medium text-theme-sm truncate max-w-[150px]">
-        Hai, {{ authStore.displayName }}
-      </span>
-
-      <ChevronDownIcon :class="{ 'rotate-180': dropdownOpen }" />
-    </button>
-
-    <!-- Dropdown Start -->
-    <div
-      v-if="dropdownOpen"
-      class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
-    >
-      <div class="flex items-center justify-between px-3 py-1">
-        <div>
-          <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
+        <div
+          class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm"
+        >
+          {{ userInitials }}
+        </div>
+        <div class="hidden md:flex flex-col items-start">
+          <span class="text-sm font-semibold text-gray-900 dark:text-white leading-none">
             {{ authStore.displayName }}
           </span>
-          <span
-            class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px]"
-          >
-            {{ authStore.user?.email || '' }}
-          </span>
         </div>
-        <ThemeToggler />
-      </div>
-
-      <ul class="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-        <li v-for="item in menuItems" :key="item.href">
-          <router-link
-            :to="item.href"
-            class="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-          >
-            <component
-              :is="item.icon"
-              class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-            />
-            {{ item.text }}
-          </router-link>
-        </li>
-      </ul>
-      <button
-        @click="signOut"
-        class="flex items-center gap-3 w-full text-left px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-      >
-        <LogoutIcon
-          class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
+        <ChevronDown
+          :size="16"
+          class="hidden md:block text-gray-400 transition-transform duration-200"
+          :class="{ 'rotate-180': isOpen }"
         />
-        Sign out
       </button>
     </div>
-    <!-- Dropdown End -->
+
+    <!-- Dropdown Menu -->
+    <div
+      v-if="isOpen"
+      class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 py-2 z-50 transform origin-top-right transition-all"
+    >
+      <div class="px-4 py-3 border-b border-gray-50 dark:border-gray-800/50">
+        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+          {{ authStore.displayName }}
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{{ authStore.user?.email || '' }}</p>
+      </div>
+
+      <div class="py-2">
+        <router-link
+          to="/profile"
+          @click="isOpen = false"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >
+          <User :size="18" />
+          Profile
+        </router-link>
+        
+        <router-link
+          v-for="item in menuItems" 
+          :key="item.href"
+          :to="item.href"
+          @click="isOpen = false"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >
+          <component :is="item.icon" :size="18" />
+          {{ item.text }}
+        </router-link>
+
+        <router-link
+          to="/settings"
+          @click="isOpen = false"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >
+          <Settings :size="18" />
+          Settings
+        </router-link>
+      </div>
+
+      <div class="py-2 border-t border-gray-50 dark:border-gray-800/50">
+        <button
+          @click="signOut"
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+        >
+          <LogOut :size="18" />
+          Sign out
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
-<script setup>
-import { UserCircleIcon, ChevronDownIcon, LogoutIcon, SettingsIcon, InfoCircleIcon, PieChartIcon } from '@/icons'
-import ThemeToggler from '../../common/ThemeToggler.vue'
-import { RouterLink, useRouter } from 'vue-router'
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ChevronDown, User, LogOut, Settings, Eye, EyeOff, Settings as SettingsIcon, Users as UsersIcon, PieChart as PieChartIcon } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import { useSettingStore } from '@/stores/setting'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const settingStore = useSettingStore()
 
-const dropdownOpen = ref(false)
-const dropdownRef = ref(null)
+const isOpen = ref(false)
+const menuRef = ref<HTMLElement | null>(null)
+
+const userInitials = computed(() => authStore.userInitials)
 
 const menuItems = computed(() => {
   const items = [
-    { href: '/profile', icon: UserCircleIcon, text: 'Profile' },
     { href: '/categories', icon: SettingsIcon, text: 'Categories' },
     { href: '/budget', icon: PieChartIcon, text: 'Budget' },
   ]
 
   if (authStore.isAdmin) {
-    items.push({ href: '/users', icon: InfoCircleIcon, text: 'User Management' })
+    items.push({ href: '/users', icon: UsersIcon, text: 'User Management' })
   }
 
   return items
 })
 
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value
-}
-
-const closeDropdown = () => {
-  dropdownOpen.value = false
-}
-
 const signOut = async () => {
+  isOpen.value = false
   await authStore.logout()
   router.push('/auth/login')
-  closeDropdown()
 }
 
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-    closeDropdown()
+const handleClickOutside = (event: MouseEvent) => {
+  if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
+    isOpen.value = false
   }
 }
 

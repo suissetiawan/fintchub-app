@@ -153,7 +153,7 @@ import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { SearchX, ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-vue-next'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
-import { getFontSizeClass } from '@/utils/amountHelper'
+import { formatNumber } from '@/utils/amountHelper'
 
 const transactionStore = useTransactionStore()
 
@@ -214,9 +214,7 @@ const monthlyExpense = computed(() => {
   return transactionStore.summary.expense || 0
 })
 
-const formatNumber = (num: number) => {
-  return new Intl.NumberFormat('id-ID').format(num)
-}
+
 
 const formatDate = (dateStr: string) => {
   const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }

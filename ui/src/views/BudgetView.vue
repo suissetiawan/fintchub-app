@@ -142,6 +142,7 @@ import { useCategoryStore } from '@/stores/category'
 import { useTransactionStore } from '@/stores/transaction'
 import { useUiStore } from '@/stores/ui'
 import BudgetFormDrawer from '@/components/budget/BudgetFormDrawer.vue'
+import { formatNumber } from '@/utils/amountHelper'
 
 const uiStore = useUiStore()
 
@@ -257,9 +258,7 @@ async function confirmAutoGenerate() {
   }
 }
 
-function formatNumber(num: number) {
-  return new Intl.NumberFormat('id-ID').format(num)
-}
+
 
 function statusLabel(status: string) {
   if (status === 'exceeded') return 'Melebihi'

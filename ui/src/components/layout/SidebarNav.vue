@@ -62,9 +62,9 @@
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
       >
         <div
-          class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"
+          class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm"
         >
-          <User :size="16" class="text-blue-600 dark:text-blue-400" />
+          {{ userInitials }}
         </div>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
@@ -89,6 +89,7 @@ import {
   User,
   Users,
   PieChart,
+  Settings,
 } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggler from '@/components/common/ThemeToggler.vue'
@@ -101,7 +102,10 @@ const navItems = [
   { to: '/transactions', icon: History, label: 'Transactions' },
   { to: '/budget', icon: PieChart, label: 'Budget' },
   { to: '/categories', icon: Tags, label: 'Categories' },
+  { to: '/settings', icon: Settings, label: 'Settings' },
 ]
+
+const userInitials = computed(() => authStore.userInitials)
 
 const isActive = (path: string) => {
   if (path === '/') return route.path === '/'

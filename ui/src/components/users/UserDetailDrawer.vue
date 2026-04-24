@@ -13,8 +13,9 @@
         >
           <UserIcon :size="40" />
         </div>
-        <h3 class="text-2xl font-black text-gray-900 dark:text-white">{{ user.username }}</h3>
-        <p class="text-gray-500 dark:text-gray-400 font-medium">{{ user.email }}</p>
+        <h3 class="text-2xl font-black text-gray-900 dark:text-white">{{ user.name || user.username }}</h3>
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">@{{ user.username }}</p>
+        <p class="text-gray-500 dark:text-gray-400 font-medium mt-1">{{ user.email }}</p>
       </div>
 
       <div class="grid grid-cols-2 gap-4">
@@ -56,6 +57,18 @@
             type="text"
             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
             placeholder="Ex: bambang"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2"
+            >Full Name</label
+          >
+          <input
+            v-model="form.name"
+            type="text"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            placeholder="Ex: Bambang Sugiono"
           />
         </div>
 
@@ -145,6 +158,7 @@ const isEditing = ref(false)
 const isNew = computed(() => !props.user?.id)
 const form = ref({
   username: '',
+  name: '',
   email: '',
   password: '',
   role: 'USER' as 'USER' | 'ADMIN',
@@ -152,9 +166,9 @@ const form = ref({
 
 const isValid = computed(() => {
   if (isNew.value) {
-    return form.value.username && form.value.email && form.value.password
+    return form.value.username && form.value.name && form.value.email && form.value.password
   }
-  return form.value.username && form.value.email
+  return form.value.username && form.value.name && form.value.email
 })
 
 watch(
@@ -164,13 +178,14 @@ watch(
       if (props.user) {
         form.value = {
           username: props.user.username,
+          name: props.user.name || props.user.username,
           email: props.user.email,
           password: '',
           role: props.user.role,
         }
         isEditing.value = false
       } else {
-        form.value = { username: '', email: '', password: '', role: 'USER' }
+        form.value = { username: '', name: '', email: '', password: '', role: 'USER' }
         isEditing.value = true
       }
     }
@@ -196,6 +211,7 @@ const handleSave = async () => {
     } else if (props.user?.id) {
       await userStore.updateUser(props.user.id, {
         username: form.value.username,
+        name: form.value.name,
         email: form.value.email,
         role: form.value.role,
       })

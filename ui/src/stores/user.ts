@@ -5,6 +5,7 @@ import { useUiStore } from './ui'
 export interface User {
   id: number
   username: string
+  name: string
   email: string
   role: 'USER' | 'ADMIN'
 }
