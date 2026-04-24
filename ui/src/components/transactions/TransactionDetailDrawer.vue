@@ -337,10 +337,18 @@ const cancelEdit = () => {
 const handleSave = async () => {
   loading.value = true;
   try {
+    const selectedCategory = categoryStore.categories.find(
+      (c) => c.name === form.value.category && c.type === form.value.type
+    );
+    const payload = {
+      ...form.value,
+      categoryId: selectedCategory ? selectedCategory.id : undefined,
+    };
+
     if (isNew.value) {
-      await transactionStore.createTransaction(form.value);
+      await transactionStore.createTransaction(payload);
     } else if (props.transaction?.id) {
-      await transactionStore.updateTransaction(props.transaction.id, form.value);
+      await transactionStore.updateTransaction(props.transaction.id, payload);
     }
     emit('success');
     close();

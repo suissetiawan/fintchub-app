@@ -144,25 +144,70 @@
         />
       </div>
     </div>
+
+    <!-- Floating Action Button -->
+    <button
+      @click="openNewTransaction"
+      class="fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+    >
+      <Plus :size="24" />
+    </button>
+
+    <!-- Transaction Detail Drawer -->
+    <TransactionDetailDrawer
+      :is-open="isDrawerOpen"
+      :transaction="selectedTransaction"
+      @close="closeDrawer"
+      @success="handleTransactionSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Wallet, TrendingUp, TrendingDown, ChevronRight } from 'lucide-vue-next'
+import { Wallet, TrendingUp, TrendingDown, ChevronRight, Plus } from 'lucide-vue-next'
 import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js'
 import { useDashboardStore } from '@/stores/dashboard'
-import { useTransactionStore } from '@/stores/transaction'
+import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { useBudgetStore } from '@/stores/budget'
 import { getFontSizeClass } from '@/utils/amountHelper'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
+import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend)
 
 const dashboardStore = useDashboardStore()
 const transactionStore = useTransactionStore()
 const budgetStore = useBudgetStore()
+
+const isDrawerOpen = ref(false)
+const selectedTransaction = ref<Transaction | null>(null)
+
+const openNewTransaction = () => {
+  selectedTransaction.value = null
+  isDrawerOpen.value = true
+}
+
+const closeDrawer = () => {
+  isDrawerOpen.value = false
+}
+
+const loadDashboardData = async () => {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const year = String(now.getFullYear())
+  await Promise.all([
+    dashboardStore.fetchDashboardData(),
+    transactionStore.fetchTransactions({ limit: '5' } as any),
+    budgetStore.fetchBudgets({ month, year }),
+    transactionStore.fetchExpensesByCategoryForMonth(month, year),
+  ])
+}
+
+const handleTransactionSuccess = async () => {
+  await loadDashboardData()
+}
 
 const budgetOverview = computed(() => budgetStore.budgetsForCurrentMonth.slice(0, 5))
 
@@ -223,14 +268,6 @@ const chartOptions = {
 }
 
 onMounted(async () => {
-  const now = new Date()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const year = String(now.getFullYear())
-  await Promise.all([
-    dashboardStore.fetchDashboardData(),
-    transactionStore.fetchTransactions({ limit: '5' } as any),
-    budgetStore.fetchBudgets({ month, year }),
-    transactionStore.fetchExpensesByCategoryForMonth(month, year),
-  ])
+  await loadDashboardData()
 })
 </script>

@@ -129,12 +129,20 @@
       </button>
     </div>
 
+    <!-- Floating Action Button -->
+    <button
+      @click="openNewTransaction"
+      class="fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+    >
+      <Plus :size="24" />
+    </button>
+
     <!-- Transaction Detail Drawer -->
     <TransactionDetailDrawer
-      v-if="selectedTransaction"
       :is-open="isDrawerOpen"
       :transaction="selectedTransaction"
       @close="closeDrawer"
+      @success="handleFilterChange"
     />
   </div>
 </template>
@@ -142,7 +150,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useTransactionStore, type Transaction } from '@/stores/transaction'
-import { SearchX, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { SearchX, ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-vue-next'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import { getFontSizeClass } from '@/utils/amountHelper'
@@ -155,6 +163,11 @@ const selectedTransaction = ref<Transaction | null>(null)
 
 const openDetails = (t: Transaction) => {
   selectedTransaction.value = t
+  isDrawerOpen.value = true
+}
+
+const openNewTransaction = () => {
+  selectedTransaction.value = null
   isDrawerOpen.value = true
 }
 
