@@ -6,8 +6,10 @@ const { authMiddleware } = require('../middlewares/auth');
 router.use(authMiddleware);
 
 router.get('/', budgetController.getAllBudgets);
+router.get('/templates', budgetController.getBudgetTemplates);
 router.post('/', budgetController.createBudget);
 router.post('/autogenerate', budgetController.autoGenerateBudget);
+router.post('/templates', budgetController.updateBudgetTemplates);
 router.put('/:id', budgetController.updateBudget);
 router.delete('/:id', budgetController.deleteBudget);
 

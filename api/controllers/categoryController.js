@@ -1,4 +1,4 @@
-const { Category } = require('../models');
+const { Category, Transaction, Budget } = require('../models');
 
 const getAllCategories = async (req, res) => {
   try {
@@ -13,9 +13,20 @@ const getAllCategories = async (req, res) => {
   }
 };
 
+const { Op } = require('sequelize');
+
 const createCategory = async (req, res) => {
   try {
     const { name, description, type } = req.body;
+    
+    // Validate uniqueness
+    const existing = await Category.findOne({
+      where: { name }
+    });
+    if (existing) {
+      return res.status(400).json({ message: 'Kategori dengan nama ini sudah ada.' });
+    }
+
     const category = await Category.create({
       name,
       description,
@@ -39,6 +50,14 @@ const updateCategory = async (req, res) => {
       return res.status(404).json({ message: 'Category not found' });
     }
 
+    // Validate uniqueness
+    const existing = await Category.findOne({
+      where: { name, id: { [Op.ne]: id } }
+    });
+    if (existing) {
+      return res.status(400).json({ message: 'Kategori dengan nama ini sudah ada.' });
+    }
+
     await category.update({ name, description, type });
     res.json({ message: 'Category updated', response: category });
   } catch (error) {
@@ -56,9 +75,23 @@ const deleteCategory = async (req, res) => {
       return res.status(404).json({ message: 'Category not found' });
     }
 
+    const transactionCount = await Transaction.count({ where: { categoryId: id } });
+    const budgetCount = await Budget.count({ where: { categoryId: id } });
+
+    if (transactionCount > 0 || budgetCount > 0) {
+      return res.status(400).json({ 
+        message: 'Kategori ini tidak dapat dihapus karena masih digunakan pada transaksi atau budget Anda.' 
+      });
+    }
+
     await category.destroy();
     res.json({ message: 'Category deleted' });
   } catch (error) {
+    if (error.name === 'SequelizeForeignKeyConstraintError') {
+      return res.status(400).json({ 
+        message: 'Kategori ini tidak dapat dihapus karena masih digunakan pada transaksi atau budget Anda.' 
+      });
+    }
     console.error('Delete category error:', error.message);
     res.status(500).json({ message: 'Server error' });
   }

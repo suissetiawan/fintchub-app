@@ -62,6 +62,11 @@ const router = createRouter({
           name: 'settings',
           component: () => import('@/views/SettingsView.vue'),
         },
+        {
+          path: 'settings/budget-template',
+          name: 'budget-template',
+          component: () => import('@/views/BudgetTemplateView.vue'),
+        },
       ],
     },
   ],

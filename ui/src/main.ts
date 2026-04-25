@@ -28,4 +28,5 @@ app.mount('#app')
 // Remove splash screen after the app has mounted
 setTimeout(() => {
   document.body.classList.add('app-loaded')
+  sessionStorage.setItem('splashShown', 'true')
 }, 500)

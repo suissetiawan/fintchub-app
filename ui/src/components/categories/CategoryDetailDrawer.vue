@@ -11,6 +11,12 @@
     @close="close"
     height-class="h-auto max-h-[90vh]"
   >
+    <!-- Error Message Banner -->
+    <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl border border-red-100 dark:border-red-900/30 text-sm font-medium flex items-start gap-3">
+      <AlertCircle :size="18" class="shrink-0 mt-0.5" />
+      <p>{{ errorMessage }}</p>
+    </div>
+
     <div v-if="!isEditing && category" class="space-y-8">
       <!-- View Mode -->
       <div class="space-y-6">
@@ -108,15 +114,30 @@
     <div v-else class="p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
       Select a category to view details.
     </div>
+
+    <!-- Delete Confirmation -->
+    <BaseConfirmDialog
+      :is-open="isDeleteDialogOpen"
+      title="Hapus Kategori?"
+      confirm-text="Hapus"
+      variant="danger"
+      icon="trash"
+      @confirm="executeDelete"
+      @cancel="isDeleteDialogOpen = false"
+    >
+      Anda akan menghapus kategori <span class="font-bold text-gray-900 dark:text-white">"{{ category?.name }}"</span>.<br>
+      <span class="text-xs text-red-500 mt-2 block">Perhatian: Kategori tidak dapat dihapus jika masih terikat dengan riwayat transaksi atau budget.</span>
+    </BaseConfirmDialog>
   </DetailDrawerLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import { Edit2, Trash2 } from 'lucide-vue-next'
+import { Edit2, Trash2, AlertCircle } from 'lucide-vue-next'
 import { useCategoryStore, type Category } from '@/stores/category'
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -132,6 +153,8 @@ const categoryStore = useCategoryStore()
 
 const isEditing = ref(false)
 const isNew = computed(() => !props.category?.id)
+const isDeleteDialogOpen = ref(false)
+const errorMessage = ref('')
 const form = ref({
   name: '',
   type: 'EXPENSE' as 'INCOME' | 'EXPENSE',
@@ -141,6 +164,7 @@ watch(
   () => props.isOpen,
   (val) => {
     if (val) {
+      errorMessage.value = ''
       if (props.category) {
         form.value = {
           name: props.category.name,
@@ -151,6 +175,8 @@ watch(
         form.value = { name: '', type: 'EXPENSE' }
         isEditing.value = true
       }
+    } else {
+      isDeleteDialogOpen.value = false
     }
   },
 )
@@ -168,6 +194,7 @@ const cancelEdit = () => {
 }
 
 const handleSave = async () => {
+  errorMessage.value = ''
   try {
     if (isNew.value) {
       await categoryStore.createCategory(form.value)
@@ -175,25 +202,29 @@ const handleSave = async () => {
       await categoryStore.updateCategory(props.category.id, form.value)
     }
     close()
-  } catch (error) {
+  } catch (error: any) {
+    errorMessage.value = error.response?.data?.message || 'Gagal menyimpan kategori.'
     console.error('Save category failed:', error)
   }
 }
 
-const confirmDelete = async () => {
+const confirmDelete = () => {
   if (!props.category?.id) return
+  isDeleteDialogOpen.value = true
+}
 
-  if (
-    confirm(
-      `Are you sure you want to delete "${props.category.name}"? This may affect transactions using this category.`,
-    )
-  ) {
-    try {
-      await categoryStore.deleteCategory(props.category.id)
-      close()
-    } catch (error) {
-      console.error('Delete category failed:', error)
-    }
+const executeDelete = async () => {
+  if (!props.category?.id) return
+  errorMessage.value = ''
+
+  try {
+    await categoryStore.deleteCategory(props.category.id)
+    isDeleteDialogOpen.value = false
+    close()
+  } catch (error: any) {
+    isDeleteDialogOpen.value = false
+    errorMessage.value = error.response?.data?.message || 'Gagal menghapus kategori.'
+    console.error('Delete category failed:', error)
   }
 }
 </script>

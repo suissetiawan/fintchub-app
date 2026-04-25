@@ -6,6 +6,13 @@
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     }
+    
+    // Hide splash screen on refresh if user is already logged in
+    const token = localStorage.getItem('accessToken');
+    const splashShown = sessionStorage.getItem('splashShown');
+    if (token && splashShown) {
+      document.documentElement.classList.add('hide-splash-fast');
+    }
   </script>
   <meta charset="UTF-8" />
   <link rel="icon" href="/plain_logo.png" />
@@ -24,6 +31,10 @@
 
   <style>
     /* Splash Screen CSS */
+    html.hide-splash-fast #splash-screen {
+      display: none !important;
+    }
+
     #splash-screen {
       position: fixed;
       top: 0;

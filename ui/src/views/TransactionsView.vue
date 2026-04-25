@@ -6,40 +6,20 @@
 
       <div class="flex items-center gap-3 w-full sm:w-auto">
         <!-- Month Dropdown -->
-        <div class="relative flex-grow sm:flex-grow-0 group">
-          <select
+        <div class="flex-grow sm:flex-grow-0 w-full sm:w-44">
+          <BaseSelect
             v-model="selectedMonth"
-            class="appearance-none pl-4 pr-10 py-2.5 w-full sm:w-44 rounded-2xl border border-gray-200 bg-white shadow-sm focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all dark:bg-gray-900 dark:border-gray-800 dark:text-white text-sm font-bold cursor-pointer hover:border-blue-300 dark:hover:border-blue-700"
-            @change="handleFilterChange"
-          >
-            <option
-              v-for="(month, index) in months"
-              :key="index"
-              :value="String(index + 1).padStart(2, '0')"
-            >
-              {{ month }}
-            </option>
-          </select>
-          <ChevronDown
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-blue-500 transition-colors"
-            :size="18"
+            :options="monthOptions"
+            @update:modelValue="handleFilterChange"
           />
         </div>
 
         <!-- Year Dropdown -->
-        <div class="relative flex-grow sm:flex-grow-0 group">
-          <select
+        <div class="flex-grow sm:flex-grow-0 w-full sm:w-32">
+          <BaseSelect
             v-model="selectedYear"
-            class="appearance-none pl-4 pr-10 py-2.5 w-full sm:w-32 rounded-2xl border border-gray-200 bg-white shadow-sm focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all dark:bg-gray-900 dark:border-gray-800 dark:text-white text-sm font-bold cursor-pointer hover:border-blue-300 dark:hover:border-blue-700"
-            @change="handleFilterChange"
-          >
-            <option v-for="year in years" :key="year" :value="String(year)">
-              {{ year }}
-            </option>
-          </select>
-          <ChevronDown
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-blue-500 transition-colors"
-            :size="18"
+            :options="yearOptions"
+            @update:modelValue="handleFilterChange"
           />
         </div>
       </div>
@@ -161,6 +141,7 @@ import { SearchX, ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-vu
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import BaseSelect from '@/components/common/BaseSelect.vue'
 import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
 
 const transactionStore = useTransactionStore()
@@ -204,6 +185,13 @@ const months = [
   'December',
 ]
 
+const monthOptions = computed(() => {
+  return months.map((month, index) => ({
+    label: month,
+    value: String(index + 1).padStart(2, '0')
+  }))
+})
+
 const years = computed(() => {
   const startYear = 2025
   const endYear = Math.max(2031, currentYear + 5)
@@ -212,6 +200,13 @@ const years = computed(() => {
     list.push(y)
   }
   return list
+})
+
+const yearOptions = computed(() => {
+  return years.value.map(year => ({
+    label: String(year),
+    value: String(year)
+  }))
 })
 
 const monthlyIncome = computed(() => {
@@ -229,13 +224,14 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('id-ID', options)
 }
 
-const handleFilterChange = () => {
+const handleFilterChange = (silent: boolean | Event = false) => {
+  const isSilent = typeof silent === 'boolean' ? silent : false
   transactionStore.fetchTransactions({
     month: selectedMonth.value,
     year: selectedYear.value,
     page: 1, // Reset to page 1
     size: 10,
-  })
+  }, isSilent)
 }
 
 const handlePageChange = (page: number) => {

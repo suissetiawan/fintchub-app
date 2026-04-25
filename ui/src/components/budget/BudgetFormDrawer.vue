@@ -5,59 +5,48 @@
     @close="$emit('close')"
     height-class="h-auto max-h-[90vh]"
   >
+    <!-- Error Message Banner -->
+    <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl border border-red-100 dark:border-red-900/30 text-sm font-medium flex items-start gap-3">
+      <AlertCircle :size="18" class="shrink-0 mt-0.5" />
+      <p>{{ errorMessage }}</p>
+    </div>
+
     <form @submit.prevent="handleSave" class="space-y-6">
       <div>
         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Kategori</label>
-        <select
-          v-model="form.categoryId"
-          required
-          :disabled="!!budget"
-          class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white disabled:opacity-60"
-        >
-          <option value="">Pilih kategori</option>
-          <option
-            v-for="c in expenseCategories"
-            :key="c.id"
-            :value="c.id"
-          >
-            {{ c.name }}
-          </option>
-        </select>
+        <div :class="{ 'opacity-60 pointer-events-none': !!budget }">
+          <BaseSelect
+            v-model="form.categoryId"
+            :options="expenseCategories"
+            placeholder="Pilih kategori"
+          />
+        </div>
         <p v-if="budget" class="mt-1 text-xs text-gray-500 dark:text-gray-400">Kategori tidak dapat diubah</p>
       </div>
 
       <div>
         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Limit Budget (Rp)</label>
-        <input
-          v-model.number="form.amount"
-          type="number"
-          min="1"
+        <BaseAmountInput
+          v-model="form.amount"
+          size="lg"
           required
-          class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
-          placeholder="Contoh: 2000000"
+          placeholder="Contoh: 2.000.000"
         />
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Bulan</label>
-          <select
+          <BaseSelect
             v-model="form.month"
-            required
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
-          >
-            <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
-          </select>
+            :options="months"
+          />
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Tahun</label>
-          <input
+          <BaseSelect
             v-model="form.year"
-            type="number"
-            min="2020"
-            max="2030"
-            required
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            :options="yearOptions"
           />
         </div>
       </div>
@@ -76,10 +65,13 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { AlertCircle } from 'lucide-vue-next'
 import { useCategoryStore } from '@/stores/category'
 import { useBudgetStore, type BudgetWithUsage } from '@/stores/budget'
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BaseAmountInput from '@/components/common/BaseAmountInput.vue'
+import BaseSelect from '@/components/common/BaseSelect.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -112,6 +104,7 @@ const months = [
   { value: '12', label: 'Des' },
 ]
 
+const errorMessage = ref('')
 const form = ref({
   categoryId: '' as number | '',
   categoryName: '',
@@ -124,6 +117,7 @@ watch(
   () => [props.isOpen, props.budget, props.month, props.year],
   () => {
     if (props.isOpen) {
+      errorMessage.value = ''
       form.value.month = props.month
       form.value.year = props.year
       if (props.budget) {
@@ -149,6 +143,7 @@ watch(
 )
 
 async function handleSave() {
+  errorMessage.value = ''
   const payload = {
     categoryId: Number(form.value.categoryId),
     categoryName: form.value.categoryName,
@@ -163,8 +158,25 @@ async function handleSave() {
       await budgetStore.createBudget(payload)
     }
     emit('saved')
-  } catch (e) {
-    console.error(e)
+  } catch (e: any) {
+    errorMessage.value = e.response?.data?.message || 'Gagal menyimpan budget.'
   }
 }
+
+const currentYear = new Date().getFullYear()
+
+const years = computed(() => {
+  const list = []
+  for (let y = currentYear - 2; y <= currentYear + 8; y++) {
+    list.push(y)
+  }
+  return list
+})
+
+const yearOptions = computed(() => {
+  return years.value.map(year => ({
+    label: String(year),
+    value: String(year)
+  }))
+})
 </script>

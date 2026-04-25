@@ -66,8 +66,8 @@ export const useTransactionStore = defineStore('transaction', {
       limit?: string
       page?: number
       size?: number
-    }) {
-      this.loading = true
+    }, silent = false) {
+      if (!silent) this.loading = true
       try {
         const response = await api.get('/api/transactions', { params })
         this.transactions = response.data.response || []
@@ -83,7 +83,7 @@ export const useTransactionStore = defineStore('transaction', {
       } catch (error) {
         console.error('Fetch transactions failed:', error)
       } finally {
-        this.loading = false
+        if (!silent) this.loading = false
       }
     },
     async createTransaction(data: any) {
@@ -104,7 +104,7 @@ export const useTransactionStore = defineStore('transaction', {
       uiStore.setLoading(true, 'Deleting...')
       try {
         await api.delete(`/api/transactions/${id}`)
-        this.transactions = this.transactions.filter((t) => t.id !== id)
+        await this.fetchTransactions() // Ensure consistent state
       } catch (error) {
         throw error
       } finally {

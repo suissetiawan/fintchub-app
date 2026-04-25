@@ -26,3 +26,5 @@ Thumbs.db
 api/node_modules/
 ui/node_modules/
 ui/dist/
+
+component-tailadmin

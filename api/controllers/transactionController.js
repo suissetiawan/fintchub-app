@@ -76,6 +76,23 @@ const getAllTransactions = async (req, res) => {
 const createTransaction = async (req, res) => {
   try {
     const { description, amount, type, date, categoryId } = req.body;
+
+    // Validate uniqueness
+    const existing = await Transaction.findOne({
+      where: {
+        userId: req.user.id,
+        description,
+        amount,
+        type,
+        date,
+        categoryId: categoryId || null
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ message: 'Transaksi dengan rincian yang sama sudah ada.' });
+    }
+
     const transaction = await Transaction.create({
       description,
       amount,
@@ -101,6 +118,23 @@ const updateTransaction = async (req, res) => {
 
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    // Validate uniqueness
+    const existing = await Transaction.findOne({
+      where: {
+        userId: req.user.id,
+        description,
+        amount,
+        type,
+        date,
+        categoryId: categoryId || null,
+        id: { [Op.ne]: id }
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ message: 'Transaksi dengan rincian yang sama sudah ada.' });
     }
 
     await transaction.update({

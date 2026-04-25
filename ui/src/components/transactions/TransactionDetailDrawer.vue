@@ -5,6 +5,12 @@
     @close="close"
     height-class="h-auto max-h-[90vh]"
   >
+    <!-- Error Message Banner -->
+    <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl border border-red-100 dark:border-red-900/30 text-sm font-medium flex items-start gap-3">
+      <AlertCircle :size="18" class="shrink-0 mt-0.5" />
+      <p>{{ errorMessage }}</p>
+    </div>
+
     <div v-if="detailLoading" class="space-y-8 animate-pulse">
       <!-- Skeleton View Mode -->
       <div class="flex flex-col items-center py-4">
@@ -154,29 +160,23 @@
             <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2"
               >Category</label
             >
-            <select
+            <BaseSelect
               v-model="form.category"
-              class="appearance-none w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white cursor-pointer"
-            >
-              <option v-for="cat in filteredCategories" :key="cat.id" :value="cat.name">
-                {{ cat.name }}
-              </option>
-            </select>
-            <ChevronDown
-              class="absolute right-3 top-[3.2rem] -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-blue-500 transition-colors"
-              :size="18"
+              :options="filteredCategories.map(c => ({ label: c.name, value: c.name }))"
+              placeholder="Select Category"
             />
           </div>
 
           <!-- Date Selection -->
-          <div>
+          <div class="relative">
             <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2"
               >Date</label
             >
-            <input
+            <flat-pickr
               v-model="form.date"
-              type="date"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+              :config="dateConfig"
+              class="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none text-gray-900 dark:text-white font-bold cursor-pointer transition-colors"
+              placeholder="Select date"
             />
           </div>
         </div>
@@ -192,17 +192,34 @@
         </BaseButton>
       </div>
     </form>
+
+    <!-- Delete Confirmation -->
+    <BaseConfirmDialog
+      :is-open="isDeleteDialogOpen"
+      title="Hapus Transaksi?"
+      confirm-text="Hapus"
+      variant="danger"
+      icon="trash"
+      @confirm="executeDelete"
+      @cancel="isDeleteDialogOpen = false"
+    >
+      Anda akan menghapus transaksi <span class="font-bold text-gray-900 dark:text-white">"{{ detailTransaction?.description }}"</span> sebesar <span class="font-bold text-red-500">Rp {{ formattedAmount }}</span>. Tindakan ini tidak dapat dibatalkan.
+    </BaseConfirmDialog>
   </DetailDrawerLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
-import { ArrowDownLeft, ArrowUpRight, Edit2, Trash2, ChevronDown, Plus } from 'lucide-vue-next';
+import { ArrowDownLeft, ArrowUpRight, Edit2, Trash2, ChevronDown, Plus, AlertCircle } from 'lucide-vue-next';
 import { useTransactionStore, type Transaction } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import { getFontSizeClass, formatNumber } from '@/utils/amountHelper';
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue';
 import BaseButton from '@/components/common/BaseButton.vue';
+import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue';
+import BaseSelect from '@/components/common/BaseSelect.vue';
+import flatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
 
 const props = defineProps<{
   isOpen: boolean;
@@ -217,6 +234,7 @@ const isNew = computed(() => !props.transaction);
 const isEditing = ref(false);
 const loading = ref(false);
 const detailLoading = ref(false);
+const errorMessage = ref('');
 const detailTransaction = ref<Transaction | null>(null);
 
 const getToday = () => {
@@ -241,6 +259,7 @@ watch(
   () => props.isOpen,
   async (newVal) => {
     if (newVal) {
+      errorMessage.value = '';
       if (props.transaction) {
         // Existing Transaction Logic
         isEditing.value = false;
@@ -331,6 +350,7 @@ const cancelEdit = () => {
 
 const handleSave = async () => {
   loading.value = true;
+  errorMessage.value = '';
   try {
     const selectedCategory = categoryStore.categories.find(
       (c) => c.name === form.value.category && c.type === form.value.type
@@ -347,7 +367,8 @@ const handleSave = async () => {
     }
     emit('success');
     close();
-  } catch (error) {
+  } catch (error: any) {
+    errorMessage.value = error.response?.data?.message || 'Gagal menyimpan transaksi.';
     console.error('Update failed:', error);
   } finally {
     loading.value = false;
@@ -361,14 +382,31 @@ function onAmountInput(e: Event) {
   form.value.amount = raw ? Number(raw) : 0;
 }
 
-const confirmDelete = async () => {
-  if (props.transaction && confirm('Are you sure you want to delete this transaction?')) {
-    try {
-      await transactionStore.deleteTransaction(props.transaction.id);
-      close();
-    } catch (error) {
-      console.error('Delete failed:', error);
-    }
+const dateConfig = {
+  dateFormat: 'Y-m-d',
+  altInput: true,
+  altFormat: 'd M Y',
+  disableMobile: true // Force the custom UI instead of native on mobile for consistent styling
+};
+
+const isDeleteDialogOpen = ref(false);
+
+const confirmDelete = () => {
+  if (props.transaction) {
+    isDeleteDialogOpen.value = true;
+  }
+};
+
+const executeDelete = async () => {
+  if (!props.transaction) return;
+  
+  try {
+    isDeleteDialogOpen.value = false;
+    await transactionStore.deleteTransaction(props.transaction.id);
+    close();
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Gagal menghapus transaksi.');
+    console.error('Delete failed:', error);
   }
 };
 

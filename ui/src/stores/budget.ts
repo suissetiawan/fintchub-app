@@ -21,14 +21,23 @@ export interface BudgetWithUsage extends Budget {
   percentUsed: number
 }
 
+export interface BudgetTemplate {
+  id: number
+  categoryId: number
+  amount: number
+  categoryName?: string
+}
+
 interface BudgetState {
   budgets: Budget[]
+  templates: BudgetTemplate[]
   loading: boolean
 }
 
 export const useBudgetStore = defineStore('budget', {
   state: (): BudgetState => ({
     budgets: [],
+    templates: [],
     loading: false,
   }),
   getters: {
@@ -72,6 +81,26 @@ export const useBudgetStore = defineStore('budget', {
         this.loading = false
       }
     },
+    async fetchTemplates() {
+      try {
+        const response = await api.get('/api/budgets/templates')
+        this.templates = response.data.response || []
+      } catch (error) {
+        console.error('Fetch templates failed:', error)
+      }
+    },
+    async updateTemplates(templates: Partial<BudgetTemplate>[]) {
+      const uiStore = useUiStore()
+      uiStore.setLoading(true, 'Saving templates...')
+      try {
+        await api.post('/api/budgets/templates', { templates })
+        await this.fetchTemplates()
+      } catch (error) {
+        throw error
+      } finally {
+        uiStore.setLoading(false)
+      }
+    },
     async createBudget(data: Partial<Budget>) {
       const uiStore = useUiStore()
       uiStore.setLoading(true, 'Creating budget...')
@@ -101,8 +130,9 @@ export const useBudgetStore = defineStore('budget', {
       const uiStore = useUiStore()
       uiStore.setLoading(true, 'Deleting budget...')
       try {
+        console.log('Deleting budget with ID:', id)
         await api.delete(`/api/budgets/${id}`)
-        this.budgets = this.budgets.filter((b) => b.id !== id)
+        this.budgets = this.budgets.filter((b) => b.id != id)
       } catch (error) {
         throw error
       } finally {

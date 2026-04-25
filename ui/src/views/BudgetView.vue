@@ -6,7 +6,7 @@
         <button
           @click="confirmAutoGenerate"
           class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95 text-sm sm:text-base"
-          title="Salin dari bulan lalu"
+          title="Salin dari bulan lalu (atau template jika belum ada data)"
         >
           <Sparkles :size="18" /> Auto Generate
         </button>
@@ -20,20 +20,20 @@
     </div>
 
     <!-- Month/Year filter -->
-    <div class="flex gap-2 items-center flex-wrap">
-      <span class="text-sm text-gray-500 dark:text-gray-400">Periode:</span>
-      <select
-        v-model="selectedMonth"
-        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 dark:text-white text-sm font-medium"
-      >
-        <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
-      </select>
-      <select
-        v-model="selectedYear"
-        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 dark:text-white text-sm font-medium"
-      >
-        <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
-      </select>
+    <div class="flex gap-3 items-center flex-wrap">
+      <span class="text-sm font-bold text-gray-500 dark:text-gray-400">Periode:</span>
+      <div class="w-36">
+        <BaseSelect
+          v-model="selectedMonth"
+          :options="months"
+        />
+      </div>
+      <div class="w-28">
+        <BaseSelect
+          v-model="selectedYear"
+          :options="years"
+        />
+      </div>
     </div>
 
     <div v-if="budgetStore.loading" class="space-y-4">
@@ -66,7 +66,7 @@
           <div class="min-w-0 flex-1">
             <h3 class="font-bold text-gray-900 dark:text-white">{{ b.categoryName }}</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              Rp {{ formatNumber(b.used) }} / Rp {{ formatNumber(b.amount) }}
+              Rp {{ formatNumber(b.used, true) }} / Rp {{ formatNumber(b.amount, true) }}
             </p>
             <div class="mt-2 h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
               <div
@@ -95,7 +95,7 @@
                 {{ statusLabel(b.status) }}
               </span>
               <span class="text-xs text-gray-500 dark:text-gray-400">
-                Sisa: Rp {{ formatNumber(b.remaining) }}
+                Sisa: Rp {{ formatNumber(b.remaining, true) }}
               </span>
             </div>
           </div>
@@ -108,7 +108,7 @@
               <Edit2 :size="18" />
             </button>
             <button
-              @click="confirmDelete(b)"
+              @click="handleDeleteBudget(b)"
               class="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
               title="Hapus"
             >
@@ -146,6 +146,32 @@
       @close="closeDrawer"
       @saved="onSaved"
     />
+
+    <!-- Delete Confirmation -->
+    <BaseConfirmDialog
+      :is-open="isDeleteDialogOpen"
+      title="Hapus Budget?"
+      confirm-text="Hapus"
+      variant="danger"
+      icon="trash"
+      @confirm="executeDelete"
+      @cancel="closeDeleteDialog"
+    >
+      Anda akan menghapus budget <span class="font-bold text-gray-900 dark:text-white">"{{ budgetToDelete?.categoryName }}"</span>. Tindakan ini tidak dapat dibatalkan.
+    </BaseConfirmDialog>
+
+    <!-- Auto Generate Confirmation -->
+    <BaseConfirmDialog
+      :is-open="isAutoGenerateOpen"
+      title="Auto Generate Budget?"
+      confirm-text="Ya, Salin"
+      icon="sparkles"
+      @confirm="executeAutoGenerate"
+      @cancel="isAutoGenerateOpen = false"
+    >
+      Salin semua pengaturan budget dari <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateSource }}</span> ke <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateTarget }}</span>?<br><br>
+      <span class="text-xs text-gray-400">Budget yang sudah ada tidak akan ditimpa.</span>
+    </BaseConfirmDialog>
   </div>
 </template>
 
@@ -158,6 +184,8 @@ import { useTransactionStore } from '@/stores/transaction'
 import { useUiStore } from '@/stores/ui'
 import BudgetFormDrawer from '@/components/budget/BudgetFormDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue'
+import BaseSelect from '@/components/common/BaseSelect.vue'
 import { formatNumber } from '@/utils/amountHelper'
 
 const uiStore = useUiStore()
@@ -186,7 +214,7 @@ const months = [
 ]
 const years = computed(() => {
   const y = now.getFullYear()
-  return [y, y - 1, y - 2]
+  return [String(y), String(y - 1), String(y - 2)]
 })
 
 const filteredBudgetsWithUsage = computed(() => {
@@ -227,14 +255,40 @@ function onSaved() {
   budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
 }
 
-function confirmDelete(b: BudgetWithUsage) {
-  if (!confirm(`Hapus budget "${b.categoryName}"?`)) return
-  budgetStore.deleteBudget(b.id).then(() => {
-    budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
-  })
+const isDeleteDialogOpen = ref(false)
+const budgetToDelete = ref<BudgetWithUsage | null>(null)
+
+function handleDeleteBudget(b: BudgetWithUsage) {
+  budgetToDelete.value = b
+  isDeleteDialogOpen.value = true
 }
 
-async function confirmAutoGenerate() {
+function closeDeleteDialog() {
+  isDeleteDialogOpen.value = false
+  budgetToDelete.value = null
+}
+
+async function executeDelete() {
+  if (!budgetToDelete.value) return
+  
+  try {
+    const id = budgetToDelete.value.id
+    closeDeleteDialog()
+    await budgetStore.deleteBudget(id)
+    // Refresh list
+    await budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Gagal menghapus budget.')
+    console.error('Delete budget failed:', error)
+  }
+}
+
+const isAutoGenerateOpen = ref(false)
+const autoGenerateSource = ref('')
+const autoGenerateTarget = ref('')
+const autoGenerateData = ref<any>(null)
+
+function confirmAutoGenerate() {
   const mIndex = months.findIndex((m) => m.value === selectedMonth.value)
   let prevMonth = ''
   let prevYear = selectedYear.value
@@ -246,28 +300,30 @@ async function confirmAutoGenerate() {
     prevMonth = months[mIndex - 1].value
   }
 
-  const sourceName = `${months.find((m) => m.value === prevMonth)?.label} ${prevYear}`
-  const targetName = `${months.find((m) => m.value === selectedMonth.value)?.label} ${selectedYear.value}`
+  autoGenerateSource.value = `${months.find((m) => m.value === prevMonth)?.label} ${prevYear}`
+  autoGenerateTarget.value = `${months.find((m) => m.value === selectedMonth.value)?.label} ${selectedYear.value}`
+  
+  autoGenerateData.value = {
+    sourceMonth: prevMonth,
+    sourceYear: prevYear,
+    targetMonth: selectedMonth.value,
+    targetYear: selectedYear.value,
+  }
 
-  if (
-    !confirm(
-      `Salin semua pengaturan budget dari ${sourceName} ke ${targetName}?\n\nBudget yang sudah ada tidak akan ditimpa.`
-    )
-  )
-    return
+  isAutoGenerateOpen.value = true
+}
 
+async function executeAutoGenerate() {
+  if (!autoGenerateData.value) return
+  isAutoGenerateOpen.value = false
+  
   try {
-    const result = await budgetStore.autoGenerateBudgets({
-      sourceMonth: prevMonth,
-      sourceYear: prevYear,
-      targetMonth: selectedMonth.value,
-      targetYear: selectedYear.value,
-    })
+    const result = await budgetStore.autoGenerateBudgets(autoGenerateData.value)
 
     if (result.count === 0) {
       alert('Tidak ada budget baru yang perlu dibuat (semua sudah ada).')
     } else {
-      alert(`Berhasil membuat ${result.count} budget baru untuk ${targetName}.`)
+      // Potentially show a success toast here later
     }
   } catch (error: any) {
     alert(error.response?.data?.message || 'Gagal generate budget.')
