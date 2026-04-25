@@ -75,11 +75,17 @@
 
     <!-- Transactions List -->
     <div class="space-y-3 pb-10">
-      <div v-if="transactionStore.loading" class="flex flex-col items-center justify-center py-20">
-        <div
-          class="h-10 w-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin dark:border-gray-800"
-        ></div>
-        <p class="mt-4 text-gray-500 dark:text-gray-400">Loading transactions...</p>
+      <div v-if="transactionStore.loading" class="space-y-3">
+        <div v-for="i in 5" :key="i" class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 flex justify-between items-center shadow-sm">
+           <div class="flex items-center gap-3">
+              <BaseSkeleton width="w-10" height="h-10" rounded="xl" />
+              <div class="space-y-2">
+                 <BaseSkeleton width="w-32" height="h-4" />
+                 <BaseSkeleton width="w-24" height="h-3" />
+              </div>
+           </div>
+           <BaseSkeleton width="w-20" height="h-5" />
+        </div>
       </div>
 
       <template v-else-if="transactionStore.transactions.length > 0">
@@ -154,6 +160,7 @@ import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { SearchX, ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-vue-next'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
 
 const transactionStore = useTransactionStore()

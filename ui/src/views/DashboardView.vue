@@ -17,7 +17,18 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div v-if="dashboardStore.loading" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div v-for="i in 3" :key="i" class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+        <div class="flex items-center justify-between">
+          <div class="space-y-2">
+            <BaseSkeleton width="w-24" height="h-4" />
+            <BaseSkeleton width="w-32" height="h-8" rounded="lg" />
+          </div>
+          <BaseSkeleton width="w-12" height="h-12" rounded="xl" />
+        </div>
+      </div>
+    </div>
+    <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <!-- Card 1: Total Balance -->
       <div
         class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
@@ -81,19 +92,28 @@
 
     <!-- Budget Overview -->
     <div
-      v-if="budgetOverview.length > 0"
+      v-if="dashboardStore.loading || budgetOverview.length > 0"
       class="p-3 sm:p-5 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
     >
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Budget Bulan Ini</h3>
+        <BaseSkeleton v-if="dashboardStore.loading" width="w-24" height="h-6" rounded="full" />
         <router-link
+          v-else
           to="/budget"
           class="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full text-xs font-bold transition-all active:scale-95 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
         >
           Lihat Semua <ChevronRight :size="14" />
         </router-link>
       </div>
-      <div class="space-y-3">
+
+      <div v-if="dashboardStore.loading" class="space-y-4">
+        <div v-for="i in 3" :key="i" class="flex justify-between items-center py-1">
+          <BaseSkeleton width="w-32" height="h-5" />
+          <BaseSkeleton width="w-24" height="h-5" />
+        </div>
+      </div>
+      <div v-else class="space-y-3">
         <div
           v-for="b in budgetOverview"
           :key="b.id"
@@ -132,7 +152,15 @@
       class="p-3 sm:p-5 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
     >
       <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Financial Breakdown</h3>
-      <div class="h-[300px] flex justify-center">
+      <div v-if="dashboardStore.loading" class="h-[300px] flex flex-col items-center justify-center space-y-6">
+        <BaseSkeleton width="w-48" height="h-48" rounded="full" />
+        <div class="flex gap-4">
+           <BaseSkeleton width="w-20" height="h-4" />
+           <BaseSkeleton width="w-20" height="h-4" />
+           <BaseSkeleton width="w-20" height="h-4" />
+        </div>
+      </div>
+      <div v-else class="h-[300px] flex justify-center">
         <Doughnut :data="chartData" :options="chartOptions" />
       </div>
     </div>
@@ -141,14 +169,28 @@
     <div class="space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
+        <BaseSkeleton v-if="transactionStore.loading" width="w-24" height="h-6" rounded="full" />
         <router-link
+          v-else
           to="/transactions"
           class="flex items-center gap-1 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full text-xs font-bold transition-all active:scale-95 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
         >
           View All <ChevronRight :size="14" />
         </router-link>
       </div>
-      <div class="space-y-3">
+      <div v-if="transactionStore.loading" class="space-y-3">
+        <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 flex justify-between items-center">
+           <div class="flex items-center gap-3">
+              <BaseSkeleton width="w-10" height="h-10" rounded="xl" />
+              <div class="space-y-1">
+                 <BaseSkeleton width="w-32" height="h-4" />
+                 <BaseSkeleton width="w-24" height="h-3" />
+              </div>
+           </div>
+           <BaseSkeleton width="w-20" height="h-5" />
+        </div>
+      </div>
+      <div v-else class="space-y-3">
         <TransactionItem
           v-for="t in recentTransactions"
           :key="t.id"
@@ -188,6 +230,7 @@ import { useSettingStore } from '@/stores/setting'
 import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend)
 

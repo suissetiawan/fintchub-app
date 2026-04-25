@@ -36,9 +36,24 @@
       </select>
     </div>
 
-    <div v-if="budgetStore.loading && budgetStore.budgets.length === 0" class="py-20 text-center">
-      <div class="inline-block h-10 w-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin dark:border-gray-800"></div>
-      <p class="mt-4 text-gray-500 dark:text-gray-400">Memuat budget...</p>
+    <div v-if="budgetStore.loading" class="space-y-4">
+      <div v-for="i in 4" :key="i" class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div class="flex justify-between items-start">
+           <div class="flex-1 space-y-3">
+              <BaseSkeleton width="w-32" height="h-5" />
+              <BaseSkeleton width="w-44" height="h-4" />
+              <BaseSkeleton width="w-full" height="h-2" rounded="full" />
+              <div class="flex gap-3">
+                 <BaseSkeleton width="w-16" height="h-4" rounded="full" />
+                 <BaseSkeleton width="w-24" height="h-4" />
+              </div>
+           </div>
+           <div class="flex gap-2">
+              <BaseSkeleton width="w-8" height="h-8" rounded="xl" />
+              <BaseSkeleton width="w-8" height="h-8" rounded="xl" />
+           </div>
+        </div>
+      </div>
     </div>
 
     <div v-else-if="filteredBudgetsWithUsage.length > 0" class="space-y-4">
@@ -142,6 +157,7 @@ import { useCategoryStore } from '@/stores/category'
 import { useTransactionStore } from '@/stores/transaction'
 import { useUiStore } from '@/stores/ui'
 import BudgetFormDrawer from '@/components/budget/BudgetFormDrawer.vue'
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 import { formatNumber } from '@/utils/amountHelper'
 
 const uiStore = useUiStore()
