@@ -166,8 +166,11 @@
            <BaseSkeleton width="w-20" height="h-4" />
         </div>
       </div>
-      <div v-else class="h-[300px] flex justify-center">
-        <Doughnut :data="chartData" :options="chartOptions" />
+      <div v-else class="h-[300px] flex justify-center items-center">
+        <Doughnut v-if="dashboardStore.breakdown.length > 0" :data="chartData" :options="chartOptions" />
+        <div v-else class="text-center py-10">
+          <p class="text-sm font-medium text-gray-400">Belum ada data pengeluaran untuk periode ini</p>
+        </div>
       </div>
     </div>
 
@@ -228,7 +231,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { Wallet, TrendingDown, ChevronRight, Plus, Calendar, Eye, EyeOff } from 'lucide-vue-next'
 import { Doughnut } from 'vue-chartjs'
-import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js'
+import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend, DoughnutController, type ChartOptions } from 'chart.js'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { useBudgetStore } from '@/stores/budget'
@@ -239,7 +242,7 @@ import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 
-ChartJS.register(ArcElement, Title, Tooltip, Legend)
+ChartJS.register(ArcElement, Title, Tooltip, Legend, DoughnutController)
 
 const dashboardStore = useDashboardStore()
 const transactionStore = useTransactionStore()
@@ -275,7 +278,7 @@ const loadDashboardData = async () => {
   const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
   const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
 
-  const { startDate, endDate } = getMonitoringDateRange(month, year, periodType, paydayDate)
+  const { startDate, endDate } = getMonitoringDateRange(month, year, periodType, paydayDate, now.getDate())
   periodRange.value = formatPeriodRange(startDate, endDate)
 
   await Promise.all([
@@ -311,19 +314,19 @@ const chartData = computed(() => ({
 
 const recentTransactions = computed(() => transactionStore.transactions.slice(0, 3))
 
-const chartOptions = {
+const chartOptions: ChartOptions<'doughnut'> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: 'bottom' as const,
+      position: 'bottom',
       labels: {
         usePointStyle: true,
         padding: 24,
         font: {
-          family: 'Outfit',
+          family: 'Plus Jakarta Sans',
           size: 11,
-          weight: '500' as any,
+          weight: 500,
         },
         color: '#64748b',
       },
@@ -336,6 +339,13 @@ const chartOptions = {
       borderColor: '#e2e8f0',
       borderWidth: 1,
       displayColors: true,
+      titleFont: {
+        family: 'Plus Jakarta Sans',
+        weight: 'bold',
+      },
+      bodyFont: {
+        family: 'Plus Jakarta Sans',
+      },
       callbacks: {
         label: (context: any) => {
           const value = context.raw

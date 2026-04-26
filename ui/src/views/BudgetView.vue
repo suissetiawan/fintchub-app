@@ -1,7 +1,13 @@
 <template>
   <div class="space-y-5">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Budget</h1>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">Budget</h1>
+        <div v-if="periodRange" class="flex items-center gap-1.5 mt-1 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full w-fit">
+          <Calendar :size="12" stroke-width="3" />
+          <span class="text-[10px] font-bold uppercase tracking-wider">{{ periodRange }}</span>
+        </div>
+      </div>
       <div class="flex items-center gap-2">
         <button
           @click="confirmAutoGenerate"
@@ -177,7 +183,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { Plus, Edit2, Trash2, Wallet, Sparkles } from 'lucide-vue-next'
+import { Plus, Edit2, Trash2, Wallet, Sparkles, Calendar } from 'lucide-vue-next'
 import { useBudgetStore, type BudgetWithUsage } from '@/stores/budget'
 import { useCategoryStore } from '@/stores/category'
 import { useTransactionStore } from '@/stores/transaction'
@@ -228,18 +234,33 @@ const filteredBudgetsWithUsage = computed(() => {
 
 const isDrawerOpen = ref(false)
 const selectedBudget = ref<BudgetWithUsage | null>(null)
+const periodRange = ref('')
+
+const formatPeriodRange = (start: string, end: string) => {
+  const s = new Date(start)
+  const e = new Date(end)
+  const opt: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }
+  return `${s.toLocaleDateString('id-ID', opt)} - ${e.toLocaleDateString('id-ID', opt)}`
+}
 
 const fetchUsageData = async () => {
   await settingStore.fetchSettings()
   const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
   const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
 
+  const now = new Date()
+  const isCurrent = 
+    selectedMonth.value === String(now.getMonth() + 1).padStart(2, '0') &&
+    selectedYear.value === String(now.getFullYear())
+
   const { startDate, endDate } = getMonitoringDateRange(
     selectedMonth.value,
     selectedYear.value,
     periodType,
-    paydayDate
+    paydayDate,
+    isCurrent ? now.getDate() : undefined
   )
+  periodRange.value = formatPeriodRange(startDate, endDate)
 
   transactionStore.fetchExpensesByCategoryForMonth({ startDate, endDate })
 }

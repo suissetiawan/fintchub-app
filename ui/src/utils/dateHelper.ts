@@ -21,12 +21,14 @@ export function toLocalISODate(date: Date): string {
  * @param year The target year, e.g. 2026 or '2026'
  * @param periodType 'calendar' or 'payday'
  * @param paydayDate The day of the month for payday (1-28)
+ * @param referenceDay Optional: if provided, helps determine which period we are currently in
  */
 export function getMonitoringDateRange(
   month: string | number,
   year: string | number,
   periodType: PeriodType,
-  paydayDate: number = 25
+  paydayDate: number = 25,
+  referenceDay?: number
 ): DateRange {
   const y = parseInt(year.toString(), 10)
   // JavaScript Date months are 0-indexed
@@ -35,19 +37,27 @@ export function getMonitoringDateRange(
   if (periodType === 'calendar') {
     // 1st to last day of the month
     const start = new Date(y, m, 1)
-    const end = new Date(y, m + 1, 0) // 0th day of next month is last day of current month
+    const end = new Date(y, m + 1, 0)
     
     return {
       startDate: toLocalISODate(start),
       endDate: toLocalISODate(end)
     }
   } else {
-    // Payday: e.g. if target month is April (m=3), start is March 25 (m=2, d=25)
-    // End is April 24 (m=3, d=24)
-    const pd = Math.max(1, Math.min(28, paydayDate)) // constrain to 1-28
+    // Payday logic
+    const pd = Math.max(1, Math.min(28, paydayDate))
     
-    const start = new Date(y, m - 1, pd)
-    const end = new Date(y, m, pd - 1)
+    let startMonth = m
+    let startYear = y
+    
+    // If a reference day is provided (e.g. today's date), 
+    // and it's before the payday, we are still in the period that started last month.
+    if (referenceDay !== undefined && referenceDay < pd) {
+      startMonth = m - 1
+    }
+    
+    const start = new Date(startYear, startMonth, pd)
+    const end = new Date(startYear, startMonth + 1, pd - 1)
     
     return {
       startDate: toLocalISODate(start),

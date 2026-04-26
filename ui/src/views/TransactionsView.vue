@@ -230,40 +230,18 @@ const formatDate = (dateStr: string) => {
 const handleFilterChange = async (silent: boolean | Event = false) => {
   const isSilent = typeof silent === 'boolean' ? silent : false
   
-  await settingStore.fetchSettings()
-  const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
-  const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
-
-  const { startDate, endDate } = getMonitoringDateRange(
-    selectedMonth.value,
-    selectedYear.value,
-    periodType,
-    paydayDate
-  )
-
   transactionStore.fetchTransactions({
-    startDate,
-    endDate,
+    month: selectedMonth.value,
+    year: selectedYear.value,
     page: 1, // Reset to page 1
     size: 10,
   }, isSilent)
 }
 
 const handlePageChange = async (page: number) => {
-  await settingStore.fetchSettings()
-  const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
-  const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
-
-  const { startDate, endDate } = getMonitoringDateRange(
-    selectedMonth.value,
-    selectedYear.value,
-    periodType,
-    paydayDate
-  )
-
   transactionStore.fetchTransactions({
-    startDate,
-    endDate,
+    month: selectedMonth.value,
+    year: selectedYear.value,
     page,
     size: 10,
   })
