@@ -26,6 +26,14 @@ export const useSettingStore = defineStore('setting', {
         } else if (this.settings['hide_amounts'] === 'false') {
           this.hideAmounts = false
         }
+        
+        // Defaults for monitoring period
+        if (!this.settings['monitor_period_type']) {
+          this.settings['monitor_period_type'] = 'calendar'
+        }
+        if (!this.settings['monitor_payday_date']) {
+          this.settings['monitor_payday_date'] = '25'
+        }
       } catch (error) {
         console.error('Fetch settings failed:', error)
       } finally {
@@ -35,6 +43,14 @@ export const useSettingStore = defineStore('setting', {
     async toggleHideAmounts() {
       this.hideAmounts = !this.hideAmounts
       await this.saveSetting('hide_amounts', this.hideAmounts.toString())
+    },
+    async setMonitorPeriod(type: 'calendar' | 'payday', date?: number) {
+      this.settings['monitor_period_type'] = type
+      await this.saveSetting('monitor_period_type', type)
+      if (date) {
+        this.settings['monitor_payday_date'] = date.toString()
+        await this.saveSetting('monitor_payday_date', date.toString())
+      }
     },
     async saveSetting(key: string, value: string) {
       try {

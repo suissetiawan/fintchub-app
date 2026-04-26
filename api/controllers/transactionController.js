@@ -6,13 +6,17 @@ const { Op } = Sequelize;
  */
 const getAllTransactions = async (req, res) => {
   try {
-    const { month, year, page = 1, size = 10 } = req.query;
+    const { month, year, startDate, endDate, page = 1, size = 10 } = req.query;
     const limit = parseInt(size);
     const offset = (parseInt(page) - 1) * limit;
 
     const where = { userId: req.user.id };
 
-    if (month && year) {
+    if (startDate && endDate) {
+      where.date = {
+        [Op.between]: [startDate, endDate],
+      };
+    } else if (month && year) {
       where.date = {
         [Op.like]: `${year}-${month}%`,
       };
@@ -204,6 +208,7 @@ const COLORS = [
 const getDashboardSummary = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { startDate, endDate } = req.query;
     const transactions = await Transaction.findAll({ where: { userId } });
 
     let totalIncome = 0;
@@ -222,7 +227,11 @@ const getDashboardSummary = async (req, res) => {
       } else {
         totalExpense += amt;
         
-        if (t.date && t.date.startsWith(currentMonthStr)) {
+        if (startDate && endDate) {
+          if (t.date >= startDate && t.date <= endDate) {
+            monthlyExpense += amt;
+          }
+        } else if (t.date && t.date.startsWith(currentMonthStr)) {
           monthlyExpense += amt;
         }
 
@@ -249,8 +258,17 @@ const getDashboardSummary = async (req, res) => {
 const getDashboardBreakdown = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { startDate, endDate } = req.query;
+
+    const where = { userId, type: 'EXPENSE' };
+    if (startDate && endDate) {
+      where.date = {
+        [Op.between]: [startDate, endDate],
+      };
+    }
+
     const transactions = await Transaction.findAll({
-      where: { userId, type: 'EXPENSE' },
+      where,
       include: [{ model: Category, as: 'category', attributes: ['name'] }],
     });
 

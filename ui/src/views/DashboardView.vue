@@ -1,9 +1,15 @@
 <template>
   <div class="space-y-5">
     <!-- Header -->
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-      <div class="flex items-center gap-2">
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">Dashboard</h1>
+        <div v-if="periodRange" class="flex items-center gap-1.5 mt-1 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full w-fit">
+          <Calendar :size="12" stroke-width="3" />
+          <span class="text-[10px] font-bold uppercase tracking-wider">{{ periodRange }}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-1">
         <button
           @click="settingStore.toggleHideAmounts()"
           class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
@@ -12,7 +18,7 @@
           <Eye v-if="!settingStore.hideAmounts" :size="18" />
           <EyeOff v-else :size="18" />
         </button>
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{ currentDate }}</span>
+        <span class="text-sm font-bold text-gray-500 dark:text-gray-400">{{ currentDate }}</span>
       </div>
     </div>
 
@@ -228,6 +234,7 @@ import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { useBudgetStore } from '@/stores/budget'
 import { useSettingStore } from '@/stores/setting'
 import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
+import { getMonitoringDateRange } from '@/utils/dateHelper'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
@@ -241,6 +248,14 @@ const settingStore = useSettingStore()
 
 const isDrawerOpen = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)
+const periodRange = ref('')
+
+const formatPeriodRange = (start: string, end: string) => {
+  const s = new Date(start)
+  const e = new Date(end)
+  const opt: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }
+  return `${s.toLocaleDateString('id-ID', opt)} - ${e.toLocaleDateString('id-ID', opt)}`
+}
 
 const openNewTransaction = () => {
   selectedTransaction.value = null
@@ -252,14 +267,22 @@ const closeDrawer = () => {
 }
 
 const loadDashboardData = async () => {
+  await settingStore.fetchSettings()
   const now = new Date()
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const year = String(now.getFullYear())
+
+  const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
+  const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
+
+  const { startDate, endDate } = getMonitoringDateRange(month, year, periodType, paydayDate)
+  periodRange.value = formatPeriodRange(startDate, endDate)
+
   await Promise.all([
-    dashboardStore.fetchDashboardData(),
-    transactionStore.fetchTransactions({ limit: '5' } as any),
+    dashboardStore.fetchDashboardData({ startDate, endDate }),
+    transactionStore.fetchTransactions({ startDate, endDate, limit: '5' } as any),
     budgetStore.fetchBudgets({ month, year }),
-    transactionStore.fetchExpensesByCategoryForMonth(month, year),
+    transactionStore.fetchExpensesByCategoryForMonth({ startDate, endDate }),
   ])
 }
 

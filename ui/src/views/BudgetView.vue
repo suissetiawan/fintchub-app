@@ -181,18 +181,21 @@ import { Plus, Edit2, Trash2, Wallet, Sparkles } from 'lucide-vue-next'
 import { useBudgetStore, type BudgetWithUsage } from '@/stores/budget'
 import { useCategoryStore } from '@/stores/category'
 import { useTransactionStore } from '@/stores/transaction'
+import { useSettingStore } from '@/stores/setting'
 import { useUiStore } from '@/stores/ui'
 import BudgetFormDrawer from '@/components/budget/BudgetFormDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue'
 import BaseSelect from '@/components/common/BaseSelect.vue'
 import { formatNumber } from '@/utils/amountHelper'
+import { getMonitoringDateRange } from '@/utils/dateHelper'
 
 const uiStore = useUiStore()
 
 const budgetStore = useBudgetStore()
 const categoryStore = useCategoryStore()
 const transactionStore = useTransactionStore()
+const settingStore = useSettingStore()
 
 const now = new Date()
 const selectedMonth = ref(String(now.getMonth() + 1).padStart(2, '0'))
@@ -226,11 +229,26 @@ const filteredBudgetsWithUsage = computed(() => {
 const isDrawerOpen = ref(false)
 const selectedBudget = ref<BudgetWithUsage | null>(null)
 
+const fetchUsageData = async () => {
+  await settingStore.fetchSettings()
+  const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
+  const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
+
+  const { startDate, endDate } = getMonitoringDateRange(
+    selectedMonth.value,
+    selectedYear.value,
+    periodType,
+    paydayDate
+  )
+
+  transactionStore.fetchExpensesByCategoryForMonth({ startDate, endDate })
+}
+
 watch(
   [selectedMonth, selectedYear],
   () => {
     budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
-    transactionStore.fetchExpensesByCategoryForMonth(selectedMonth.value, selectedYear.value)
+    fetchUsageData()
   },
   { immediate: false }
 )
@@ -341,6 +359,6 @@ function statusLabel(status: string) {
 onMounted(() => {
   categoryStore.fetchCategories()
   budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value })
-  transactionStore.fetchExpensesByCategoryForMonth(selectedMonth.value, selectedYear.value)
+  fetchUsageData()
 })
 </script>

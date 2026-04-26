@@ -143,8 +143,11 @@ import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 import BaseSelect from '@/components/common/BaseSelect.vue'
 import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
+import { getMonitoringDateRange } from '@/utils/dateHelper'
+import { useSettingStore } from '@/stores/setting'
 
 const transactionStore = useTransactionStore()
+const settingStore = useSettingStore()
 
 // Drawer State
 const isDrawerOpen = ref(false)
@@ -224,20 +227,43 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('id-ID', options)
 }
 
-const handleFilterChange = (silent: boolean | Event = false) => {
+const handleFilterChange = async (silent: boolean | Event = false) => {
   const isSilent = typeof silent === 'boolean' ? silent : false
+  
+  await settingStore.fetchSettings()
+  const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
+  const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
+
+  const { startDate, endDate } = getMonitoringDateRange(
+    selectedMonth.value,
+    selectedYear.value,
+    periodType,
+    paydayDate
+  )
+
   transactionStore.fetchTransactions({
-    month: selectedMonth.value,
-    year: selectedYear.value,
+    startDate,
+    endDate,
     page: 1, // Reset to page 1
     size: 10,
   }, isSilent)
 }
 
-const handlePageChange = (page: number) => {
+const handlePageChange = async (page: number) => {
+  await settingStore.fetchSettings()
+  const periodType = (settingStore.settings['monitor_period_type'] as any) || 'calendar'
+  const paydayDate = parseInt(settingStore.settings['monitor_payday_date'] || '25')
+
+  const { startDate, endDate } = getMonitoringDateRange(
+    selectedMonth.value,
+    selectedYear.value,
+    periodType,
+    paydayDate
+  )
+
   transactionStore.fetchTransactions({
-    month: selectedMonth.value,
-    year: selectedYear.value,
+    startDate,
+    endDate,
     page,
     size: 10,
   })

@@ -45,12 +45,12 @@ export const useTransactionStore = defineStore('transaction', {
     expensesByCategoryForMonth: {},
   }),
   actions: {
-    /** Load expense totals per category for a month (for budget overview) */
-    async fetchExpensesByCategoryForMonth(month: string, year: string) {
+    /** Load expense totals per category for a period (for budget overview) */
+    async fetchExpensesByCategoryForMonth(params: { month?: string; year?: string; startDate?: string; endDate?: string }) {
       this.loading = true
       try {
         const response = await api.get('/api/transactions', {
-          params: { month, year, size: 1 }, // We only need the breakdown, not the rows
+          params: { ...params, size: 1 }, // We only need the breakdown, not the rows
         })
         this.expensesByCategoryForMonth = response.data.categoryBreakdown || {}
       } catch (error) {
@@ -63,6 +63,8 @@ export const useTransactionStore = defineStore('transaction', {
     async fetchTransactions(params?: {
       month?: string
       year?: string
+      startDate?: string
+      endDate?: string
       limit?: string
       page?: number
       size?: number

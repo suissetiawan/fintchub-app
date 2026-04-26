@@ -2,20 +2,23 @@
   <div class="relative" ref="selectRef">
     <div
       @click="toggleDropdown"
-      class="flex items-center justify-between w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl focus-within:ring-2 focus-within:ring-blue-600 cursor-pointer transition-colors"
-      :class="isOpen ? 'ring-2 ring-blue-600' : ''"
+      class="flex items-center justify-between w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:ring-2 focus-within:ring-blue-600 cursor-pointer transition-all"
+      :class="[
+        isOpen ? 'ring-2 ring-blue-600' : '',
+        sizeClasses
+      ]"
     >
       <span v-if="!selectedOption" class="text-gray-400 dark:text-gray-500 font-medium truncate">
         {{ placeholder }}
       </span>
-      <span v-else class="text-gray-900 dark:text-white font-bold truncate">
+      <span v-else class="dark:text-white font-bold truncate" :class="textClasses">
         {{ selectedOption.label }}
       </span>
       
       <ChevronDown
         class="text-gray-400 transition-transform duration-200 shrink-0 ml-2"
         :class="{ 'transform rotate-180 text-blue-500': isOpen }"
-        :size="18"
+        :size="iconSize"
       />
     </div>
 
@@ -74,11 +77,39 @@ import { ChevronDown, Check } from 'lucide-vue-next'
 
 import type { CSSProperties } from 'vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: any
   options: any[]
   placeholder?: string
-}>()
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+}>(), {
+  size: 'md'
+})
+
+const sizeClasses = computed(() => {
+  switch (props.size) {
+    case 'xs': return 'px-2 py-1 text-xs rounded-lg'
+    case 'sm': return 'px-3 py-1.5 text-sm rounded-xl'
+    case 'lg': return 'px-5 py-3 text-lg rounded-xl'
+    case 'xl': return 'px-6 py-4 text-xl rounded-2xl'
+    default: return 'px-4 py-2.5 text-base rounded-xl'
+  }
+})
+
+const textClasses = computed(() => {
+  return props.size === 'xs' || props.size === 'sm' ? 'text-gray-900' : 'text-gray-900'
+  // Actually text-gray-900 is fine for all, but maybe font weight or specific sizes
+})
+
+const iconSize = computed(() => {
+  switch (props.size) {
+    case 'xs': return 14
+    case 'sm': return 16
+    case 'lg': return 22
+    case 'xl': return 26
+    default: return 18
+  }
+})
 
 const emit = defineEmits(['update:modelValue'])
 
