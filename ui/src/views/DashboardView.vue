@@ -186,7 +186,25 @@
     <div
       class="p-3 sm:p-5 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
     >
-      <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Financial Breakdown</h3>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Financial Breakdown</h3>
+        <div class="flex items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+          <button
+            @click="breakdownType = 'EXPENSE'"
+            :class="breakdownType === 'EXPENSE' ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600 font-bold' : 'text-gray-500'"
+            class="px-3 py-1 text-[11px] rounded-lg transition-all"
+          >
+            Expense
+          </button>
+          <button
+            @click="breakdownType = 'INCOME'"
+            :class="breakdownType === 'INCOME' ? 'bg-white dark:bg-gray-700 shadow-sm text-green-600 font-bold' : 'text-gray-500'"
+            class="px-3 py-1 text-[11px] rounded-lg transition-all"
+          >
+            Income
+          </button>
+        </div>
+      </div>
       <div v-if="dashboardStore.loading" class="h-[300px] flex flex-col items-center justify-center space-y-6">
         <BaseSkeleton width="w-48" height="h-48" rounded="full" />
         <div class="flex gap-4">
@@ -198,7 +216,9 @@
       <div v-else class="h-[300px] flex justify-center items-center">
         <Doughnut v-if="dashboardStore.breakdown.length > 0" :data="chartData" :options="chartOptions" />
         <div v-else class="text-center py-10">
-          <p class="text-sm font-medium text-gray-400">Belum ada data pengeluaran untuk periode ini</p>
+          <p class="text-sm font-medium text-gray-400">
+            Belum ada data {{ breakdownType === 'EXPENSE' ? 'pengeluaran' : 'pemasukan' }} untuk periode ini
+          </p>
         </div>
       </div>
     </div>
@@ -249,7 +269,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { Wallet, TrendingDown, ChevronRight, ChevronDown, Plus, Calendar, Eye, EyeOff } from 'lucide-vue-next'
 import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend, DoughnutController, type ChartOptions } from 'chart.js'
@@ -274,6 +294,7 @@ const settingStore = useSettingStore()
 
 const isDrawerOpen = ref(false)
 const isDailySpendingExpanded = ref(false)
+const breakdownType = ref<'EXPENSE' | 'INCOME'>('EXPENSE')
 const selectedTransaction = ref<Transaction | null>(null)
 const periodRange = ref('')
 
@@ -306,12 +327,16 @@ const loadDashboardData = async () => {
   periodRange.value = formatPeriodRange(startDate, endDate)
 
   await Promise.all([
-    dashboardStore.fetchDashboardData({ startDate, endDate }),
+    dashboardStore.fetchDashboardData({ startDate, endDate, type: breakdownType.value }),
     transactionStore.fetchTransactions({ startDate, endDate, limit: '5' } as any),
     budgetStore.fetchBudgets({ month, year }),
     transactionStore.fetchExpensesByCategoryForMonth({ startDate, endDate }),
   ])
 }
+
+watch(breakdownType, () => {
+  loadDashboardData()
+})
 
 const handleTransactionSuccess = async () => {
   await loadDashboardData()

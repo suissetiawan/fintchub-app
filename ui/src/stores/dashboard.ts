@@ -34,11 +34,11 @@ export const useDashboardStore = defineStore('dashboard', {
     loading: false,
   }),
   actions: {
-    async fetchDashboardData(params?: { startDate?: string; endDate?: string }) {
+    async fetchDashboardData(params?: { startDate?: string; endDate?: string; type?: string }) {
       this.loading = true
       try {
         const [summaryRes, breakdownRes] = await Promise.all([
-          api.get('/api/dashboard/summary', { params }),
+          api.get('/api/dashboard/summary', { params: { startDate: params?.startDate, endDate: params?.endDate } }),
           api.get('/api/dashboard/breakdown', { params }),
         ])
         this.summary = summaryRes.data.response

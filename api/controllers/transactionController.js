@@ -271,9 +271,9 @@ const getDashboardSummary = async (req, res) => {
 const getDashboardBreakdown = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, type = 'EXPENSE' } = req.query;
 
-    const where = { userId, type: 'EXPENSE' };
+    const where = { userId, type };
     if (startDate && endDate) {
       where.date = {
         [Op.between]: [startDate, endDate],

@@ -27,6 +27,14 @@ onMounted(() => {
 watch([theme, isInitialized], ([newTheme, newIsInitialized]) => {
   if (newIsInitialized) {
     localStorage.setItem('theme', newTheme)
+    
+    // Update theme-color meta tags for status bar support
+    const themeColor = newTheme === 'dark' ? '#0f172a' : '#ffffff'
+    const metaTags = document.querySelectorAll('meta[name="theme-color"]')
+    metaTags.forEach((meta) => {
+      meta.setAttribute('content', themeColor)
+    })
+
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
