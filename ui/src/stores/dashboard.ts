@@ -6,6 +6,7 @@ export interface Summary {
   income: number
   expense: number
   dailySpending: number
+  dailyBreakdown: { category: string; amount: number }[]
 }
 
 export interface Breakdown {
@@ -27,6 +28,7 @@ export const useDashboardStore = defineStore('dashboard', {
       income: 0,
       expense: 0,
       dailySpending: 0,
+      dailyBreakdown: [],
     },
     breakdown: [],
     loading: false,

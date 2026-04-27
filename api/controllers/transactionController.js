@@ -209,12 +209,16 @@ const getDashboardSummary = async (req, res) => {
   try {
     const userId = req.user.id;
     const { startDate, endDate } = req.query;
-    const transactions = await Transaction.findAll({ where: { userId } });
+    const transactions = await Transaction.findAll({ 
+      where: { userId },
+      include: [{ model: Category, as: 'category', attributes: ['name'] }]
+    });
 
     let totalIncome = 0;
     let totalExpense = 0;
     let monthlyExpense = 0;
     let dailySpending = 0;
+    const dailyMap = {};
 
     const today = new Date();
     const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
@@ -237,16 +241,25 @@ const getDashboardSummary = async (req, res) => {
 
         if (t.date && t.date.startsWith(todayStr)) {
           dailySpending += amt;
+          const catName = t.category ? t.category.name : 'Uncategorized';
+          if (!dailyMap[catName]) dailyMap[catName] = 0;
+          dailyMap[catName] += amt;
         }
       }
     });
+
+    const dailyBreakdown = Object.entries(dailyMap).map(([category, amount]) => ({
+      category,
+      amount
+    })).sort((a, b) => b.amount - a.amount);
 
     res.json({
       response: {
         balance: totalIncome - totalExpense,
         income: totalIncome,
         expense: monthlyExpense,
-        dailySpending
+        dailySpending,
+        dailyBreakdown
       }
     });
   } catch (error) {

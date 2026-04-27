@@ -78,11 +78,24 @@
 
       <!-- Card 3: Daily Spending -->
       <div
-        class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800"
+        class="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800 transition-all duration-300"
       >
         <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Daily Spending</p>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Daily Spending</p>
+              <button 
+                v-if="dashboardStore.summary.dailyBreakdown?.length > 0"
+                @click="isDailySpendingExpanded = !isDailySpendingExpanded"
+                class="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <ChevronDown 
+                  :size="14" 
+                  class="text-gray-400 transition-transform duration-300"
+                  :class="{ 'rotate-180': isDailySpendingExpanded }"
+                />
+              </button>
+            </div>
             <h3
               :class="[getFontSizeClass(dashboardStore.summary.dailySpending), 'text-orange-600']"
               class="font-bold mt-1"
@@ -92,6 +105,21 @@
           </div>
           <div class="p-3 bg-orange-50 text-orange-600 rounded-xl dark:bg-orange-900/20">
             <Calendar :size="24" />
+          </div>
+        </div>
+
+        <!-- Breakdown List (Expandable) -->
+        <div 
+          v-show="isDailySpendingExpanded && dashboardStore.summary.dailyBreakdown?.length > 0"
+          class="mt-4 pt-4 border-t border-gray-50 dark:border-gray-800 space-y-2"
+        >
+          <div 
+            v-for="item in dashboardStore.summary.dailyBreakdown" 
+            :key="item.category"
+            class="flex items-center justify-between text-xs"
+          >
+            <span class="text-gray-500 dark:text-gray-400">{{ item.category }}</span>
+            <span class="font-bold text-gray-700 dark:text-gray-200">Rp {{ formatNumber(item.amount) }}</span>
           </div>
         </div>
       </div>
@@ -222,7 +250,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Wallet, TrendingDown, ChevronRight, Plus, Calendar, Eye, EyeOff } from 'lucide-vue-next'
+import { Wallet, TrendingDown, ChevronRight, ChevronDown, Plus, Calendar, Eye, EyeOff } from 'lucide-vue-next'
 import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend, DoughnutController, type ChartOptions } from 'chart.js'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -245,6 +273,7 @@ const budgetStore = useBudgetStore()
 const settingStore = useSettingStore()
 
 const isDrawerOpen = ref(false)
+const isDailySpendingExpanded = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)
 const periodRange = ref('')
 
@@ -288,7 +317,11 @@ const handleTransactionSuccess = async () => {
   await loadDashboardData()
 }
 
-const budgetOverview = computed(() => budgetStore.budgetsForCurrentMonth.slice(0, 5))
+const budgetOverview = computed(() => {
+  return [...budgetStore.budgetsForCurrentMonth]
+    .sort((a, b) => b.percentUsed - a.percentUsed)
+    .slice(0, 5)
+})
 
 const currentDate = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 
