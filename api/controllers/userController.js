@@ -134,7 +134,7 @@ const getProfile = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { username, name, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -144,6 +144,7 @@ const createUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
+      name,
       email,
       password: hashedPassword,
       role: role || 'USER',
@@ -154,6 +155,7 @@ const createUser = async (req, res) => {
       response: {
         id: user.id,
         username: user.username,
+        name: user.name,
         email: user.email,
         role: user.role,
       },

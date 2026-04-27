@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-5">
+  <PullToRefresh :on-refresh="handleFilterChange">
+    <div class="space-y-5">
     <!-- Header & Filter -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
@@ -54,18 +55,9 @@
     </div>
 
     <!-- Transactions List -->
-    <div class="space-y-3 pb-10">
-      <div v-if="transactionStore.loading" class="space-y-3">
-        <div v-for="i in 5" :key="i" class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 flex justify-between items-center shadow-sm">
-           <div class="flex items-center gap-3">
-              <BaseSkeleton width="w-10" height="h-10" rounded="xl" />
-              <div class="space-y-2">
-                 <BaseSkeleton width="w-32" height="h-4" />
-                 <BaseSkeleton width="w-24" height="h-3" />
-              </div>
-           </div>
-           <BaseSkeleton width="w-20" height="h-5" />
-        </div>
+    <div class="space-y-3 pb-20">
+      <div v-if="transactionStore.loading">
+        <BaseListSkeleton :count="5" />
       </div>
 
       <template v-else-if="transactionStore.transactions.length > 0">
@@ -131,7 +123,7 @@
       @close="closeDrawer"
       @success="handleFilterChange"
     />
-  </div>
+  </PullToRefresh>
 </template>
 
 <script setup lang="ts">
@@ -141,6 +133,8 @@ import { SearchX, ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-vu
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import BaseListSkeleton from '@/components/common/BaseListSkeleton.vue'
+import PullToRefresh from '@/components/common/PullToRefresh.vue'
 import BaseSelect from '@/components/common/BaseSelect.vue'
 import { getFontSizeClass, formatNumber } from '@/utils/amountHelper'
 import { getMonitoringDateRange } from '@/utils/dateHelper'

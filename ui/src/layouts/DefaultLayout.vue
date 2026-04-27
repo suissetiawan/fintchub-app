@@ -8,7 +8,7 @@
       <!-- Mobile Header (hidden on desktop) -->
       <AppHeader class="lg:hidden" />
 
-      <main class="flex-grow pb-20 lg:pb-0">
+      <main class="flex-grow pb-28 lg:pb-0">
         <div class="mx-auto max-w-screen-xl px-4 py-4 md:px-6 md:py-6 lg:px-8">
           <router-view />
         </div>

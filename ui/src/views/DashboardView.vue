@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-5">
+  <PullToRefresh :on-refresh="loadDashboardData">
+    <div class="space-y-5">
     <!-- Header -->
     <div class="flex items-start justify-between">
       <div>
@@ -187,17 +188,8 @@
           View All <ChevronRight :size="14" />
         </router-link>
       </div>
-      <div v-if="transactionStore.loading" class="space-y-3">
-        <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 flex justify-between items-center">
-           <div class="flex items-center gap-3">
-              <BaseSkeleton width="w-10" height="h-10" rounded="xl" />
-              <div class="space-y-1">
-                 <BaseSkeleton width="w-32" height="h-4" />
-                 <BaseSkeleton width="w-24" height="h-3" />
-              </div>
-           </div>
-           <BaseSkeleton width="w-20" height="h-5" />
-        </div>
+      <div v-if="transactionStore.loading">
+        <BaseListSkeleton :count="3" />
       </div>
       <div v-else class="space-y-3">
         <TransactionItem
@@ -225,6 +217,7 @@
       @success="handleTransactionSuccess"
     />
   </div>
+</PullToRefresh>
 </template>
 
 <script setup lang="ts">
@@ -241,6 +234,8 @@ import { getMonitoringDateRange } from '@/utils/dateHelper'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import BaseListSkeleton from '@/components/common/BaseListSkeleton.vue'
+import PullToRefresh from '@/components/common/PullToRefresh.vue'
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend, DoughnutController)
 

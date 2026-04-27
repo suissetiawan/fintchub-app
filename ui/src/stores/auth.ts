@@ -36,6 +36,8 @@ const parseJwt = (token: string) => {
   }
 }
 
+import { getInitials } from '@/utils/stringHelper'
+
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: safeParse('user'),
@@ -47,14 +49,7 @@ export const useAuthStore = defineStore('auth', {
     isLoggedIn: (state) => !!state.accessToken && state.accessToken !== 'undefined',
     isAdmin: (state) => state.user?.role === 'ADMIN',
     displayName: (state) => (state.user?.name ? state.user.name : state.user?.username || 'User'),
-    userInitials: (state) => {
-      const name = state.user?.name || state.user?.username || 'User'
-      const names = name.trim().split(/\s+/)
-      if (names.length >= 2) {
-        return (names[0][0] + names[names.length - 1][0]).toUpperCase()
-      }
-      return name.substring(0, 2).toUpperCase()
-    },
+    userInitials: (state) => getInitials(state.user?.name || state.user?.username || 'User'),
   },
   actions: {
     async login(credentials: any) {

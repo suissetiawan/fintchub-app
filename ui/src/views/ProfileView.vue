@@ -1,11 +1,33 @@
 <template>
   <div class="space-y-4 sm:space-y-6 max-w-2xl mx-auto">
+    <!-- Loading State -->
+    <div v-if="!authStore.user" class="space-y-6">
+      <div class="flex flex-col items-center space-y-4">
+        <BaseSkeleton width="w-24" height="h-24" rounded="full" />
+        <BaseSkeleton width="w-48" height="h-8" />
+        <BaseSkeleton width="w-32" height="h-4" />
+      </div>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-8 space-y-8 shadow-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div v-for="i in 3" :key="i" class="space-y-2">
+            <BaseSkeleton width="w-20" height="h-3" />
+            <BaseSkeleton width="w-32" height="h-5" />
+          </div>
+        </div>
+        <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
+          <BaseSkeleton width="w-full" height="h-12" rounded="xl" />
+          <BaseSkeleton width="w-full" height="h-12" rounded="xl" />
+        </div>
+      </div>
+    </div>
+
     <!-- Profile Header -->
-    <div class="text-center space-y-3 sm:space-y-4">
+    <template v-else>
+      <div class="text-center space-y-3 sm:space-y-4">
       <div
-        class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+        class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-black text-3xl"
       >
-        <UserIcon :size="40" />
+        {{ authStore.userInitials }}
       </div>
       <div>
         <h1 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
@@ -102,16 +124,18 @@
         </div>
       </div>
     </DetailDrawerLayout>
-  </div>
+  </template>
+</div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { User as UserIcon, LogOut, Edit2 } from 'lucide-vue-next'
+import { LogOut, Edit2 } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()

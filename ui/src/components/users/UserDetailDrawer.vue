@@ -9,9 +9,9 @@
       <!-- View Mode -->
       <div class="flex flex-col items-center py-4">
         <div
-          class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center mb-4"
+          class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center mb-4 font-black text-2xl"
         >
-          <UserIcon :size="40" />
+          {{ getInitials(user.name || user.username) }}
         </div>
         <h3 class="text-2xl font-black text-gray-900 dark:text-white">{{ user.name || user.username }}</h3>
         <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">@{{ user.username }}</p>
@@ -55,6 +55,7 @@
           <input
             v-model="form.username"
             type="text"
+            autocomplete="off"
             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
             placeholder="Ex: bambang"
           />
@@ -79,6 +80,7 @@
           <input
             v-model="form.email"
             type="email"
+            autocomplete="off"
             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
             placeholder="email@example.com"
           />
@@ -90,9 +92,9 @@
           >
           <input
             v-model="form.password"
-            type="password"
+            type="text"
+            autocomplete="new-password"
             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
-            placeholder="********"
           />
         </div>
 
@@ -137,14 +139,28 @@
       </div>
     </div>
   </DetailDrawerLayout>
+
+  <BaseConfirmDialog
+    :is-open="showDeleteConfirm"
+    title="Delete User"
+    :message="`Are you sure you want to delete user '${user?.username}'? This action cannot be undone.`"
+    variant="danger"
+    icon="trash"
+    confirm-text="Delete User"
+    @confirm="handleDelete"
+    @cancel="showDeleteConfirm = false"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import { Edit2, Trash2, User as UserIcon } from 'lucide-vue-next'
+import { Edit2, Trash2 } from 'lucide-vue-next'
 import { useUserStore, type User } from '@/stores/user'
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue'
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import { getInitials } from '@/utils/stringHelper'
 
 const props = defineProps<{
   isOpen: boolean
@@ -155,6 +171,7 @@ const emit = defineEmits(['close'])
 const userStore = useUserStore()
 
 const isEditing = ref(false)
+const showDeleteConfirm = ref(false)
 const isNew = computed(() => !props.user?.id)
 const form = ref({
   username: '',
@@ -222,16 +239,19 @@ const handleSave = async () => {
   }
 }
 
-const confirmDelete = async () => {
+const confirmDelete = () => {
+  showDeleteConfirm.value = true
+}
+
+const handleDelete = async () => {
   if (!props.user?.id) return
 
-  if (confirm(`Are you sure you want to delete "${props.user.username}"?`)) {
-    try {
-      await userStore.deleteUser(props.user.id)
-      close()
-    } catch (error) {
-      console.error('Delete user failed:', error)
-    }
+  try {
+    await userStore.deleteUser(props.user.id)
+    showDeleteConfirm.value = false
+    close()
+  } catch (error) {
+    console.error('Delete user failed:', error)
   }
 }
 </script>

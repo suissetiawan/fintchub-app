@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-5">
+  <PullToRefresh :on-refresh="handleRefresh">
+    <div class="space-y-5">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">Budget</h1>
@@ -178,7 +179,7 @@
       Salin semua pengaturan budget dari <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateSource }}</span> ke <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateTarget }}</span>?<br><br>
       <span class="text-xs text-gray-400">Budget yang sudah ada tidak akan ditimpa.</span>
     </BaseConfirmDialog>
-  </div>
+  </PullToRefresh>
 </template>
 
 <script setup lang="ts">
@@ -193,6 +194,7 @@ import BudgetFormDrawer from '@/components/budget/BudgetFormDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue'
 import BaseSelect from '@/components/common/BaseSelect.vue'
+import PullToRefresh from '@/components/common/PullToRefresh.vue'
 import { formatNumber } from '@/utils/amountHelper'
 import { getMonitoringDateRange } from '@/utils/dateHelper'
 
@@ -263,6 +265,13 @@ const fetchUsageData = async () => {
   periodRange.value = formatPeriodRange(startDate, endDate)
 
   transactionStore.fetchExpensesByCategoryForMonth({ startDate, endDate })
+}
+
+const handleRefresh = async () => {
+  await Promise.all([
+    budgetStore.fetchBudgets({ month: selectedMonth.value, year: selectedYear.value }),
+    fetchUsageData()
+  ])
 }
 
 watch(

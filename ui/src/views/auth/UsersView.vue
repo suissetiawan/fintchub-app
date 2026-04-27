@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-6">
+  <PullToRefresh :on-refresh="userStore.fetchUsers">
+    <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h1>
@@ -12,15 +13,9 @@
     </div>
 
     <!-- User List -->
-    <div class="space-y-3 pb-20">
-      <div
-        v-if="userStore.loading && userStore.users.length === 0"
-        class="flex flex-col items-center justify-center py-20"
-      >
-        <div
-          class="h-10 w-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin dark:border-gray-800"
-        ></div>
-        <p class="mt-4 text-gray-500 dark:text-gray-400">Loading users...</p>
+    <div class="space-y-3 pb-28">
+      <div v-if="userStore.loading && userStore.users.length === 0">
+        <BaseListSkeleton :count="5" avatar-rounded="full" avatar-size="w-12" />
       </div>
 
       <template v-else-if="userStore.users.length > 0">
@@ -32,9 +27,9 @@
         >
           <div class="flex items-center gap-3">
             <div
-              class="h-12 w-12 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-500"
+              class="h-12 w-12 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center font-black text-sm"
             >
-              <UserIcon :size="24" />
+              {{ getInitials(u.name || u.username) }}
             </div>
             <div>
               <p class="font-bold text-gray-900 dark:text-white">{{ u.username }}</p>
@@ -67,14 +62,18 @@
 
     <!-- User Detail Drawer -->
     <UserDetailDrawer :is-open="isDrawerOpen" :user="selectedUser" @close="closeDrawer" />
-  </div>
+  </PullToRefresh>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { UserPlus, User as UserIcon, Users, ChevronRight } from 'lucide-vue-next'
+import { UserPlus, Users, ChevronRight } from 'lucide-vue-next'
 import { useUserStore, type User } from '@/stores/user'
 import UserDetailDrawer from '@/components/users/UserDetailDrawer.vue'
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import BaseListSkeleton from '@/components/common/BaseListSkeleton.vue'
+import PullToRefresh from '@/components/common/PullToRefresh.vue'
+import { getInitials } from '@/utils/stringHelper'
 
 const userStore = useUserStore()
 

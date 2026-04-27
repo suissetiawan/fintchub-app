@@ -187,6 +187,7 @@ layer(base);
   html,
   body {
     @apply no-scrollbar;
+    overscroll-behavior-y: none;
   }
   body {
     @apply relative font-normal font-outfit z-1 bg-gray-50;

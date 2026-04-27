@@ -4,7 +4,7 @@ const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../ut
 
 const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, name, email, password } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -19,6 +19,7 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
+      name,
       email,
       password: hashedPassword,
       role: 'ADMIN', // First user is always ADMIN
@@ -29,6 +30,7 @@ const register = async (req, res) => {
       response: {
         userId: user.id,
         username: user.username,
+        name: user.name,
         email: user.email,
       },
     });
