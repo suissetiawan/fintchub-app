@@ -43,6 +43,56 @@
       </div>
     </div>
 
+    <!-- Allocation Summary Card -->
+    <div 
+      v-if="!budgetStore.loading"
+      class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ringkasan Alokasi</h3>
+        <span 
+          class="text-xs font-bold px-2 py-0.5 rounded-full"
+          :class="remainingToAllocate < 0 ? 'bg-red-100 text-red-600 dark:bg-red-900/30' : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30'"
+        >
+          {{ remainingToAllocate < 0 ? 'Over Allocated' : 'Balanced' }}
+        </span>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-[10px] text-gray-400 uppercase font-bold">Total Income</p>
+          <p class="text-lg font-bold text-gray-900 dark:text-white">Rp {{ formatNumber(transactionStore.summary.income || 0) }}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px] text-gray-400 uppercase font-bold">Total Alokasi</p>
+          <p class="text-lg font-bold text-blue-600">Rp {{ formatNumber(totalAllocated) }}</p>
+        </div>
+      </div>
+
+      <!-- Progress Bar for Allocation -->
+      <div class="mt-4">
+        <div class="flex items-center justify-between mb-1.5 text-xs">
+          <span class="text-gray-500">Persentase Alokasi</span>
+          <span :class="allocationPercentage > 100 ? 'text-red-500 font-bold' : 'text-gray-700 dark:text-gray-300 font-bold'">
+            {{ allocationPercentage.toFixed(1) }}%
+          </span>
+        </div>
+        <div class="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+          <div 
+            class="h-full rounded-full transition-all duration-500"
+            :class="allocationPercentage > 100 ? 'bg-red-500' : 'bg-blue-500'"
+            :style="{ width: Math.min(allocationPercentage, 100) + '%' }"
+          />
+        </div>
+        <p v-if="remainingToAllocate !== 0" class="mt-2 text-[11px] italic" :class="remainingToAllocate < 0 ? 'text-red-400' : 'text-gray-400'">
+          {{ remainingToAllocate < 0 
+              ? `Alokasi melebihi income sebesar Rp ${formatNumber(Math.abs(remainingToAllocate))}` 
+              : `Masih ada Rp ${formatNumber(remainingToAllocate)} yang belum dialokasikan` 
+          }}
+        </p>
+      </div>
+    </div>
+
     <div v-if="budgetStore.loading" class="space-y-4">
       <div v-for="i in 4" :key="i" class="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
         <div class="flex justify-between items-start">
@@ -231,13 +281,28 @@ const years = computed(() => {
 
 const filteredBudgetsWithUsage = computed(() => {
   return budgetStore.budgetsWithUsage.filter(
-    (b) => b.month === selectedMonth.value && b.year === selectedYear.value
+    (b) => String(b.month).padStart(2, '0') === selectedMonth.value && 
+           String(b.year) === selectedYear.value
   )
 })
 
 const isDrawerOpen = ref(false)
 const selectedBudget = ref<BudgetWithUsage | null>(null)
 const periodRange = ref('')
+
+const totalAllocated = computed(() => {
+  return filteredBudgetsWithUsage.value.reduce((sum, b) => sum + parseFloat(b.amount as any || 0), 0)
+})
+
+const remainingToAllocate = computed(() => {
+  return (transactionStore.summary.income || 0) - totalAllocated.value
+})
+
+const allocationPercentage = computed(() => {
+  const income = transactionStore.summary.income || 0
+  if (income === 0) return 0
+  return (totalAllocated.value / income) * 100
+})
 
 const formatPeriodRange = (start: string, end: string) => {
   const s = new Date(start)
@@ -265,7 +330,10 @@ const fetchUsageData = async () => {
   )
   periodRange.value = formatPeriodRange(startDate, endDate)
 
-  transactionStore.fetchExpensesByCategoryForMonth({ startDate, endDate })
+  await Promise.all([
+    transactionStore.fetchExpensesByCategoryForMonth({ startDate, endDate }),
+    transactionStore.fetchTransactions({ startDate, endDate, limit: '1' } as any)
+  ])
 }
 
 const handleRefresh = async () => {
