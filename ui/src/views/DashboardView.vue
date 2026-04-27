@@ -200,24 +200,24 @@
         />
       </div>
     </div>
-
-    <!-- Floating Action Button -->
-    <button
-      @click="openNewTransaction"
-      class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
-    >
-      <Plus :size="24" />
-    </button>
-
-    <!-- Transaction Detail Drawer -->
-    <TransactionDetailDrawer
-      :is-open="isDrawerOpen"
-      :transaction="selectedTransaction"
-      @close="closeDrawer"
-      @success="handleTransactionSuccess"
-    />
   </div>
 </PullToRefresh>
+
+<!-- Floating Action Button -->
+<button
+  @click="openNewTransaction"
+  class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+>
+  <Plus :size="24" />
+</button>
+
+<!-- Transaction Detail Drawer -->
+<TransactionDetailDrawer
+  :is-open="isDrawerOpen"
+  :transaction="selectedTransaction"
+  @close="closeDrawer"
+  @success="handleTransactionSuccess"
+/>
 </template>
 
 <script setup lang="ts">
@@ -317,7 +317,7 @@ const chartOptions: ChartOptions<'doughnut'> = {
       position: 'bottom',
       labels: {
         usePointStyle: true,
-        padding: 24,
+        padding: 14,
         font: {
           family: 'Plus Jakarta Sans',
           size: 11,

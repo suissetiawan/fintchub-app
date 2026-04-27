@@ -107,23 +107,24 @@
         <ChevronRight :size="20" />
       </button>
     </div>
-
-    <!-- Floating Action Button -->
-    <button
-      @click="openNewTransaction"
-      class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
-    >
-      <Plus :size="24" />
-    </button>
-
-    <!-- Transaction Detail Drawer -->
-    <TransactionDetailDrawer
-      :is-open="isDrawerOpen"
-      :transaction="selectedTransaction"
-      @close="closeDrawer"
-      @success="handleFilterChange"
-    />
+    </div>
   </PullToRefresh>
+
+  <!-- Floating Action Button -->
+  <button
+    @click="openNewTransaction"
+    class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+  >
+    <Plus :size="24" />
+  </button>
+
+  <!-- Transaction Detail Drawer -->
+  <TransactionDetailDrawer
+    :is-open="isDrawerOpen"
+    :transaction="selectedTransaction"
+    @close="closeDrawer"
+    @success="handleFilterChange"
+  />
 </template>
 
 <script setup lang="ts">

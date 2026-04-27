@@ -144,42 +144,43 @@
         Tambah Budget
       </button>
     </div>
-
-    <BudgetFormDrawer
-      :is-open="isDrawerOpen"
-      :budget="selectedBudget"
-      :month="selectedMonth"
-      :year="selectedYear"
-      @close="closeDrawer"
-      @saved="onSaved"
-    />
-
-    <!-- Delete Confirmation -->
-    <BaseConfirmDialog
-      :is-open="isDeleteDialogOpen"
-      title="Hapus Budget?"
-      confirm-text="Hapus"
-      variant="danger"
-      icon="trash"
-      @confirm="executeDelete"
-      @cancel="closeDeleteDialog"
-    >
-      Anda akan menghapus budget <span class="font-bold text-gray-900 dark:text-white">"{{ budgetToDelete?.categoryName }}"</span>. Tindakan ini tidak dapat dibatalkan.
-    </BaseConfirmDialog>
-
-    <!-- Auto Generate Confirmation -->
-    <BaseConfirmDialog
-      :is-open="isAutoGenerateOpen"
-      title="Auto Generate Budget?"
-      confirm-text="Ya, Salin"
-      icon="sparkles"
-      @confirm="executeAutoGenerate"
-      @cancel="isAutoGenerateOpen = false"
-    >
-      Salin semua pengaturan budget dari <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateSource }}</span> ke <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateTarget }}</span>?<br><br>
-      <span class="text-xs text-gray-400">Budget yang sudah ada tidak akan ditimpa.</span>
-    </BaseConfirmDialog>
+    </div>
   </PullToRefresh>
+
+  <BudgetFormDrawer
+    :is-open="isDrawerOpen"
+    :budget="selectedBudget"
+    :month="selectedMonth"
+    :year="selectedYear"
+    @close="closeDrawer"
+    @saved="onSaved"
+  />
+
+  <!-- Delete Confirmation -->
+  <BaseConfirmDialog
+    :is-open="isDeleteDialogOpen"
+    title="Hapus Budget?"
+    confirm-text="Hapus"
+    variant="danger"
+    icon="trash"
+    @confirm="executeDelete"
+    @cancel="closeDeleteDialog"
+  >
+    Anda akan menghapus budget <span class="font-bold text-gray-900 dark:text-white">"{{ budgetToDelete?.categoryName }}"</span>. Tindakan ini tidak dapat dibatalkan.
+  </BaseConfirmDialog>
+
+  <!-- Auto Generate Confirmation -->
+  <BaseConfirmDialog
+    :is-open="isAutoGenerateOpen"
+    title="Auto Generate Budget?"
+    confirm-text="Ya, Salin"
+    icon="sparkles"
+    @confirm="executeAutoGenerate"
+    @cancel="isAutoGenerateOpen = false"
+  >
+    Salin semua pengaturan budget dari <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateSource }}</span> ke <span class="font-bold text-gray-900 dark:text-white">{{ autoGenerateTarget }}</span>?<br><br>
+    <span class="text-xs text-gray-400">Budget yang sudah ada tidak akan ditimpa.</span>
+  </BaseConfirmDialog>
 </template>
 
 <script setup lang="ts">

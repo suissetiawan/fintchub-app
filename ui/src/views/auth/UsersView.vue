@@ -59,10 +59,11 @@
         <h3 class="font-bold text-gray-900 dark:text-white">No users found</h3>
       </div>
     </div>
-
-    <!-- User Detail Drawer -->
-    <UserDetailDrawer :is-open="isDrawerOpen" :user="selectedUser" @close="closeDrawer" />
+    </div>
   </PullToRefresh>
+
+  <!-- User Detail Drawer -->
+  <UserDetailDrawer :is-open="isDrawerOpen" :user="selectedUser" @close="closeDrawer" />
 </template>
 
 <script setup lang="ts">
