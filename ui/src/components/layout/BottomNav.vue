@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 dark:bg-gray-900 dark:border-gray-800 lg:hidden"
+    class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 dark:bg-gray-900 dark:border-gray-800 lg:hidden pb-[env(safe-area-inset-bottom)]"
   >
     <div class="flex items-center justify-around h-20">
       <router-link

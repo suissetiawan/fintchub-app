@@ -1,6 +1,6 @@
 <template>
   <header
-    class="sticky top-0 flex w-full bg-white border-b border-gray-100 z-40 dark:border-gray-800 dark:bg-gray-950/80 backdrop-blur-md"
+    class="sticky top-0 flex w-full bg-white border-b border-gray-100 z-40 dark:border-gray-800 dark:bg-gray-950/80 backdrop-blur-md pt-[env(safe-area-inset-top)]"
   >
     <div class="flex items-center justify-between w-full px-5 py-3">
       <!-- Left: Profile & Greeting -->
