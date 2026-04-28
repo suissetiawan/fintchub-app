@@ -1,6 +1,6 @@
 <template>
   <BaseConfirmDialog
-    :is-open="offlineReady || needRefresh || true"
+    :is-open="offlineReady || needRefresh"
     :title="needRefresh ? 'Pembaruan Tersedia!' : 'Aplikasi Siap Offline'"
     :message="needRefresh ? 'Versi terbaru sudah siap untuk meningkatkan pengalaman Anda. Klik update sekarang untuk menyegarkan aplikasi.' : 'Aplikasi sekarang dapat diakses tanpa koneksi internet. Anda tetap bisa mencatat keuangan kapan saja!'"
     :confirm-text="needRefresh ? 'Update Sekarang' : 'Oke'"
