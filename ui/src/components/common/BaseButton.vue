@@ -47,10 +47,10 @@ defineEmits(['click'])
 
 const sizeClasses = computed(() => {
   return props.size === 'sm'
-    ? 'py-2 px-3 text-sm'
+    ? 'py-2 px-3 text-xs'
     : props.size === 'lg'
-      ? 'py-4 px-6 text-lg'
-      : 'py-3 px-4'
+      ? 'py-3 px-5 text-base'
+      : 'py-2.5 px-4 text-sm'
 })
 
 const variantClasses = computed(() => {

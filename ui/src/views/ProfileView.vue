@@ -68,9 +68,7 @@
       <div class="pt-4 sm:pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-3">
         <BaseButton
           @click="openEditDrawer"
-          variant="secondary"
           block
-          size="lg"
         >
           <template #icon-left><Edit2 :size="18" /></template>
           Edit Profile
@@ -79,8 +77,6 @@
           @click="openChangePasswordDrawer"
           variant="secondary"
           block
-          size="lg"
-          class="!bg-cyan-50 !text-cyan-600 dark:!bg-cyan-900/20 dark:!text-cyan-400 hover:!bg-cyan-100"
         >
           <template #icon-left><Key :size="18" /></template>
           Ubah Password
@@ -89,7 +85,6 @@
           @click="handleLogout"
           variant="danger"
           block
-          size="lg"
         >
           <template #icon-left><LogOut :size="18" /></template>
           Sign Out

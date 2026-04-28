@@ -9,11 +9,10 @@
           <span class="text-[10px] font-bold uppercase tracking-wider">{{ periodRange }}</span>
         </div>
       </div>
-      <div class="flex items-center gap-2 w-full sm:w-auto">
+      <div class="flex items-center gap-2">
         <BaseButton
           @click="confirmAutoGenerate"
           variant="secondary"
-          class="flex-1 sm:flex-none"
           title="Salin dari bulan lalu (atau template jika belum ada data)"
         >
           <template #icon-left><Sparkles :size="18" /></template>
@@ -21,7 +20,6 @@
         </BaseButton>
         <BaseButton
           @click="openAddDrawer"
-          class="flex-1 sm:flex-none"
         >
           <template #icon-left><Plus :size="20" /></template>
           Tambah Budget

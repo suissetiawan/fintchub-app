@@ -41,6 +41,7 @@
           @click="onConfirm"
           :variant="variant === 'danger' ? 'danger' : 'primary'"
           class="flex-1 !rounded-2xl order-1 sm:order-2"
+          :loading="loading"
         >
           {{ confirmText }}
         </BaseButton>
@@ -63,12 +64,14 @@ const props = withDefaults(defineProps<{
   cancelText?: string
   variant?: 'info' | 'danger' | 'success'
   icon?: 'trash' | 'alert' | 'info' | 'sparkles'
+  loading?: boolean
 }>(), {
   message: '',
   confirmText: 'Konfirmasi',
   cancelText: 'Batal',
   variant: 'info',
-  icon: 'info'
+  icon: 'info',
+  loading: false
 })
 
 const emit = defineEmits(['confirm', 'cancel', 'close'])
