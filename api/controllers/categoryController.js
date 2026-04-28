@@ -1,19 +1,34 @@
 const { Category, Transaction, Budget } = require('../models');
+const { seedStarterCategories } = require('../services/categoryService');
+const { Op } = require('sequelize');
 
 const getAllCategories = async (req, res) => {
   try {
-    // Categories are shared or specific to user? 
-    // In many apps, categories are global, but let's make them global for now as seen in UI (no user filtering in the fetch categories call).
-    // Actually, UI says admin can manage them.
-    const categories = await Category.findAll();
+    // Check if user has any personal categories
+    const userCategoryCount = await Category.count({
+      where: { userId: req.user.id }
+    });
+
+    // If no personal categories, seed them (for existing users)
+    if (userCategoryCount === 0) {
+      await seedStarterCategories(req.user.id);
+    }
+
+    // Categories are shared (userId is null) or specific to user
+    const categories = await Category.findAll({
+      where: {
+        [Op.or]: [
+          { userId: null },
+          { userId: req.user.id }
+        ]
+      }
+    });
     res.json({ response: categories });
   } catch (error) {
     console.error('Fetch categories error:', error.message);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-const { Op } = require('sequelize');
 
 const createCategory = async (req, res) => {
   try {
@@ -50,7 +65,12 @@ const updateCategory = async (req, res) => {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    // Validate uniqueness
+    // Authorization: Admin or Owner
+    if (req.user.role !== 'ADMIN' && category.userId !== req.user.id) {
+      return res.status(403).json({ message: 'Anda tidak memiliki akses untuk mengubah kategori ini.' });
+    }
+
+    // Validate uniqueness (excluding current)
     const existing = await Category.findOne({
       where: { name, id: { [Op.ne]: id } }
     });
@@ -73,6 +93,11 @@ const deleteCategory = async (req, res) => {
     
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
+    }
+
+    // Authorization: Admin or Owner
+    if (req.user.role !== 'ADMIN' && category.userId !== req.user.id) {
+      return res.status(403).json({ message: 'Anda tidak memiliki akses untuk menghapus kategori ini.' });
     }
 
     const transactionCount = await Transaction.count({ where: { categoryId: id } });

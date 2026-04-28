@@ -1,6 +1,7 @@
 const { User } = require('../models');
 const bcrypt = require('bcryptjs');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
+const { seedStarterCategories } = require('../services/categoryService');
 
 const register = async (req, res) => {
   try {
@@ -24,6 +25,9 @@ const register = async (req, res) => {
       password: hashedPassword,
       role: 'ADMIN', // First user is always ADMIN
     });
+    
+    // Seed starter categories for new user
+    await seedStarterCategories(user.id);
 
     res.status(201).json({
       message: 'Registration successful',

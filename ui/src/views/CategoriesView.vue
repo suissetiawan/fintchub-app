@@ -4,7 +4,6 @@
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Categories</h1>
       <button
-        v-if="authStore.isAdmin"
         @click="openAddDrawer"
         class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
       >
@@ -93,7 +92,7 @@
           {{ filterType ? 'Try another filter' : 'Start by adding your first category' }}
         </p>
         <button
-          v-if="authStore.isAdmin && !filterType"
+          v-if="!filterType"
           @click="openAddDrawer"
           class="mt-6 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
         >
@@ -106,7 +105,7 @@
     <CategoryDetailDrawer
       :is-open="isDrawerOpen"
       :category="selectedCategory"
-      :can-edit="authStore.isAdmin"
+      :can-edit="authStore.isAdmin || !selectedCategory || (selectedCategory.userId === authStore.user?.id)"
       @close="closeDrawer"
     />
   </div>

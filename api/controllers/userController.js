@@ -1,5 +1,6 @@
 const { User } = require('../models');
 const bcrypt = require('bcryptjs');
+const { seedStarterCategories } = require('../services/categoryService');
 
 const getAllUsers = async (req, res) => {
   try {
@@ -149,6 +150,9 @@ const createUser = async (req, res) => {
       password: hashedPassword,
       role: role || 'USER',
     });
+    
+    // Seed starter categories for new user
+    await seedStarterCategories(user.id);
 
     res.status(201).json({
       message: 'User created successfully',
