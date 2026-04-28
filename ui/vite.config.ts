@@ -12,7 +12,7 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['plain_logo.png', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'Fincthub',
