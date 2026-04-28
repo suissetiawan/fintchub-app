@@ -65,12 +65,18 @@ watch([theme, isInitialized, currentColorTheme], ([newTheme, newIsInitialized, n
     })
 
     // Update theme-color meta tags for status bar support
-    // Priority: Primary 600 for status bar if light, Dark bg if dark
-    const themeColor = newTheme === 'dark' ? '#030712' : selectedThemeColors['600']
+    // Priority: White for light mode (matching AppHeader), Dark gray-950 for dark mode
+    const themeColor = newTheme === 'dark' ? '#030712' : '#ffffff'
     const metaTags = document.querySelectorAll('meta[name="theme-color"]')
     metaTags.forEach((meta) => {
       meta.setAttribute('content', themeColor)
     })
+
+    // Update Apple specific status bar style
+    const appleStatusTag = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
+    if (appleStatusTag) {
+      appleStatusTag.setAttribute('content', newTheme === 'dark' ? 'black-translucent' : 'default')
+    }
 
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark')
