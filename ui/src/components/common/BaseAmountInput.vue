@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
+import { formatNumber } from '@/utils/amountHelper'
 
 const props = withDefaults(defineProps<{
   modelValue: number | string | null | undefined
@@ -32,9 +33,21 @@ const displayValue = ref('')
 
 const format = (val: number | string | null | undefined) => {
   if (val === null || val === undefined || val === '') return ''
-  const num = typeof val === 'string' ? parseInt(val.replace(/\D/g, '')) : val
-  if (isNaN(num)) return ''
-  return new Intl.NumberFormat('id-ID').format(num)
+  
+  let num: number
+  if (typeof val === 'string') {
+    // If it's a DB decimal string (e.g. "100.00"), parse as float
+    if (val.includes('.') && !val.includes(',') && /^\d+\.\d+$/.test(val)) {
+      num = parseFloat(val)
+    } else {
+      // Otherwise it's likely a formatted string or raw digit string
+      num = parseInt(val.replace(/\D/g, '')) || 0
+    }
+  } else {
+    num = val
+  }
+  
+  return formatNumber(num, true)
 }
 
 const handleInput = (e: Event) => {
@@ -42,12 +55,11 @@ const handleInput = (e: Event) => {
   const rawValue = target.value.replace(/\D/g, '')
   const numValue = rawValue ? parseInt(rawValue) : 0
   
-  displayValue.value = format(numValue)
+  displayValue.value = formatNumber(numValue, true)
   emit('update:modelValue', numValue)
 }
 
 const handleBlur = () => {
-  // Ensure formatted on blur
   displayValue.value = format(props.modelValue)
 }
 

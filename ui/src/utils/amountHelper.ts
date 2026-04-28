@@ -22,8 +22,11 @@ export const getFontSizeClass = (amount: number, baseClass: string = 'text-2xl')
 
 import { useSettingStore } from '@/stores/setting'
 
-export const formatNumber = (num: number, forceShow: boolean = false): string => {
-  if (num === undefined || num === null || Number.isNaN(Number(num))) return ''
+export const formatNumber = (num: number | string, forceShow: boolean = false): string => {
+  if (num === undefined || num === null) return ''
+  const val = typeof num === 'string' ? parseFloat(num) : num
+  if (Number.isNaN(val)) return ''
+
   try {
     const settingStore = useSettingStore()
     if (settingStore.hideAmounts && !forceShow) {
@@ -32,5 +35,5 @@ export const formatNumber = (num: number, forceShow: boolean = false): string =>
   } catch (e) {
     // Fallback if pinia is not active yet
   }
-  return new Intl.NumberFormat('id-ID').format(num)
+  return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(val)
 }

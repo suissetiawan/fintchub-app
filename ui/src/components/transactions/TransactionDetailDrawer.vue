@@ -128,17 +128,12 @@
           <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2"
             >Amount (Rp)</label
           >
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">Rp</span>
-            <input
-              :value="formattedAmount"
-              @input="onAmountInput"
-              inputmode="numeric"
-              required
-              class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white text-xl font-black"
-              placeholder="0"
-            />
-          </div>
+          <BaseAmountInput
+            v-model="form.amount"
+            size="xl"
+            required
+            placeholder="0"
+          />
         </div>
 
         <!-- Description -->
@@ -218,6 +213,7 @@ import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue';
 import BaseButton from '@/components/common/BaseButton.vue';
 import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue';
 import BaseSelect from '@/components/common/BaseSelect.vue';
+import BaseAmountInput from '@/components/common/BaseAmountInput.vue';
 import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 
@@ -375,12 +371,6 @@ const handleSave = async () => {
   }
 };
 
-// handler input
-function onAmountInput(e: Event) {
-  const target = e.target as HTMLInputElement;
-  const raw = target.value.replace(/\D/g, ''); // ambil angka saja
-  form.value.amount = raw ? Number(raw) : 0;
-}
 
 const dateConfig = {
   dateFormat: 'Y-m-d',

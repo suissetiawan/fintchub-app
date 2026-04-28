@@ -153,8 +153,10 @@ function removeTemplate(index: number) {
 async function saveTemplates() {
   loading.value = true
   try {
-    // Only save templates with amount > 0
-    const toSave = localTemplates.value.filter(t => t.amount && t.amount > 0)
+    // Only save templates with amount > 0, ensuring they are numbers
+    const toSave = localTemplates.value
+      .filter(t => t.amount && Number(t.amount) > 0)
+      .map(t => ({ ...t, amount: Number(t.amount) }))
     await budgetStore.updateTemplates(toSave)
     router.back()
   } catch (error) {
