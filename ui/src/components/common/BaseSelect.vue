@@ -89,10 +89,10 @@ const props = withDefaults(defineProps<{
 const sizeClasses = computed(() => {
   switch (props.size) {
     case 'xs': return 'px-2 py-1 text-xs rounded-lg'
-    case 'sm': return 'px-3 py-1.5 text-sm rounded-xl'
-    case 'lg': return 'px-5 py-3 text-lg rounded-xl'
-    case 'xl': return 'px-6 py-4 text-xl rounded-2xl'
-    default: return 'px-4 py-2.5 text-base rounded-xl'
+    case 'sm': return 'px-4 py-2.5 text-sm rounded-xl'
+    case 'lg': return 'px-5 py-3.5 text-lg rounded-xl'
+    case 'xl': return 'px-6 py-4.5 text-xl rounded-2xl'
+    default: return 'px-4 py-3 text-sm rounded-xl'
   }
 })
 

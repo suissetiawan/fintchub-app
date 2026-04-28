@@ -67,6 +67,19 @@
                   {{ cat.type }}
                 </span>
               </div>
+              
+              <!-- Admin Only: Ownership Info -->
+              <div v-if="authStore.isAdmin" class="flex items-center gap-1.5">
+                <div 
+                  :class="[
+                    'w-1.5 h-1.5 rounded-full',
+                    cat.userId === null ? 'bg-blue-500' : 'bg-purple-500'
+                  ]"
+                ></div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  {{ cat.userId === null ? 'Global' : `Personal: ${cat.user?.name || 'User'}` }}
+                </span>
+              </div>
             </div>
             <div
               class="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-brand-50 dark:group-hover:bg-brand-900/20 group-hover:text-brand-600 transition-colors"

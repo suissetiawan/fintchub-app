@@ -7,6 +7,11 @@ export interface Category {
   name: string
   type: 'INCOME' | 'EXPENSE'
   userId: number | string | null
+  user?: {
+    id: number
+    username: string
+    name: string
+  }
 }
 
 interface CategoryState {

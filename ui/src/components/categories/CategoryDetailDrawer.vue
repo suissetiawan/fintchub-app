@@ -28,7 +28,6 @@
           </p>
           <p class="text-xl font-black text-gray-900 dark:text-white">{{ category.name }}</p>
         </div>
-
         <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl">
           <p
             class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-2"
@@ -41,6 +40,26 @@
           >
             {{ category.type }}
           </p>
+        </div>
+
+        <!-- Admin Only: View Ownership -->
+        <div v-if="authStore.isAdmin" class="p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl">
+          <p
+            class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-2"
+          >
+            Ownership
+          </p>
+          <div class="flex items-center gap-2">
+            <div 
+              :class="[
+                'w-2 h-2 rounded-full',
+                category.userId === null ? 'bg-blue-500' : 'bg-purple-500'
+              ]"
+            ></div>
+            <p class="text-lg font-black text-gray-900 dark:text-white">
+              {{ category.userId === null ? 'Global' : `Personal: ${category.user?.name || 'User'}` }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -101,6 +120,48 @@
             </button>
           </div>
         </div>
+
+        <!-- Admin Only: Ownership Edit -->
+        <div v-if="authStore.isAdmin" class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+          <p class="text-sm font-bold text-gray-700 dark:text-gray-300">Ownership Settings (Admin Only)</p>
+          
+          <div class="flex p-1 bg-gray-100 dark:bg-gray-900 rounded-2xl">
+            <button
+              type="button"
+              @click="form.userId = null"
+              :class="
+                form.userId === null
+                  ? 'bg-white dark:bg-gray-800 shadow-sm text-blue-600'
+                  : 'text-gray-500'
+              "
+              class="flex-1 py-2.5 font-bold rounded-xl transition-all text-sm"
+            >
+              Global
+            </button>
+            <button
+              type="button"
+              @click="form.userId = category?.userId || authStore.user?.id || 0"
+              :class="
+                form.userId !== null
+                  ? 'bg-white dark:bg-gray-800 shadow-sm text-purple-600'
+                  : 'text-gray-500'
+              "
+              class="flex-1 py-2.5 font-bold rounded-xl transition-all text-sm"
+            >
+              Personal
+            </button>
+          </div>
+
+          <div v-if="form.userId !== null">
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Assign to User</label>
+            <BaseSelect 
+              v-model="form.userId"
+              :options="userStore.users.map(u => ({ label: `${u.name} (${u.username})`, value: u.id }))"
+              placeholder="Select User"
+              size="sm"
+            />
+          </div>
+        </div>
       </div>
 
       <div class="flex flex-col gap-3 pt-3">
@@ -135,8 +196,11 @@
 import { ref, watch, computed } from 'vue'
 import { Edit2, Trash2, AlertCircle } from 'lucide-vue-next'
 import { useCategoryStore, type Category } from '@/stores/category'
+import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BaseSelect from '@/components/common/BaseSelect.vue'
 import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue'
 
 const props = withDefaults(
@@ -150,6 +214,8 @@ const props = withDefaults(
 
 const emit = defineEmits(['close'])
 const categoryStore = useCategoryStore()
+const authStore = useAuthStore()
+const userStore = useUserStore()
 
 const isEditing = ref(false)
 const isNew = computed(() => !props.category?.id)
@@ -158,6 +224,7 @@ const errorMessage = ref('')
 const form = ref({
   name: '',
   type: 'EXPENSE' as 'INCOME' | 'EXPENSE',
+  userId: null as number | string | null,
 })
 
 watch(
@@ -169,11 +236,21 @@ watch(
         form.value = {
           name: props.category.name,
           type: props.category.type || 'EXPENSE',
+          userId: props.category.userId,
         }
         isEditing.value = false
       } else {
-        form.value = { name: '', type: 'EXPENSE' }
+        form.value = { 
+          name: '', 
+          type: 'EXPENSE',
+          userId: authStore.isAdmin ? null : authStore.user?.id || null 
+        }
         isEditing.value = true
+      }
+      
+      // Fetch users if admin for selection
+      if (authStore.isAdmin && userStore.users.length === 0) {
+        userStore.fetchUsers()
       }
     } else {
       isDeleteDialogOpen.value = false
