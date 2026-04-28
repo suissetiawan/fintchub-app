@@ -6,7 +6,7 @@
       <router-link
         to="/"
         class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
-        :class="isActive('/') ? 'text-blue-600 dark:text-blue-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
+        :class="isActive('/') ? 'text-brand-600 dark:text-brand-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
         <LayoutDashboard :size="isActive('/') ? 26 : 24" />
         <span class="text-xs mt-1">Home</span>
@@ -15,7 +15,7 @@
       <router-link
         to="/transactions"
         class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
-        :class="isActive('/transactions') ? 'text-blue-600 dark:text-blue-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
+        :class="isActive('/transactions') ? 'text-brand-600 dark:text-brand-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
         <History :size="isActive('/transactions') ? 26 : 24" />
         <span class="text-xs mt-1">History</span>
@@ -23,18 +23,18 @@
 
       <!-- FAB in Center -->
       <div class="relative -mt-10">
-        <button
+        <BaseButton
           @click="$emit('add-transaction')"
-          class="flex items-center justify-center w-16 h-16 bg-blue-600 text-white rounded-full shadow-xl hover:bg-blue-700 active:scale-95 transition-transform border-4 border-white dark:border-gray-900"
+          class="!w-16 !h-16 !rounded-full !p-0 border-4 border-white dark:border-gray-900 shadow-xl"
         >
           <Plus :size="32" />
-        </button>
+        </BaseButton>
       </div>
 
       <router-link
         to="/budget"
         class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
-        :class="isActive('/budget') ? 'text-blue-600 dark:text-blue-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
+        :class="isActive('/budget') ? 'text-brand-600 dark:text-brand-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
         <Wallet :size="isActive('/budget') ? 26 : 24" />
         <span class="text-xs mt-1">Budget</span>
@@ -43,7 +43,7 @@
       <router-link
         to="/more"
         class="flex flex-col items-center justify-center w-full h-full transition-all duration-200"
-        :class="isActive('/more') ? 'text-blue-600 dark:text-blue-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
+        :class="isActive('/more') ? 'text-brand-600 dark:text-brand-500 scale-105 font-bold' : 'text-gray-500 dark:text-gray-400'"
       >
         <MoreHorizontal :size="isActive('/more') ? 26 : 24" />
         <span class="text-xs mt-1">More</span>
@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { LayoutDashboard, History, Plus, Wallet, MoreHorizontal } from 'lucide-vue-next'
+import BaseButton from '@/components/common/BaseButton.vue'
 
 const route = useRoute()
 

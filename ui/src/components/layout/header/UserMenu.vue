@@ -4,10 +4,10 @@
       <!-- User Button -->
       <button
         @click="isOpen = !isOpen"
-        class="flex items-center gap-3 p-1.5 pr-4 rounded-full border border-gray-100 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        class="flex items-center gap-3 p-1.5 pr-4 rounded-full border border-gray-100 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500/20"
       >
         <div
-          class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm"
+          class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-600 to-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-sm"
         >
           {{ userInitials }}
         </div>
@@ -40,7 +40,7 @@
         <router-link
           to="/profile"
           @click="isOpen = false"
-          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
         >
           <User :size="18" />
           Profile
@@ -51,7 +51,7 @@
           :key="item.href"
           :to="item.href"
           @click="isOpen = false"
-          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
         >
           <component :is="item.icon" :size="18" />
           {{ item.text }}
@@ -60,7 +60,7 @@
         <router-link
           to="/settings"
           @click="isOpen = false"
-          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
         >
           <Settings :size="18" />
           Settings

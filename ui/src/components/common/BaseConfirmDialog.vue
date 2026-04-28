@@ -11,7 +11,7 @@
       <div 
         :class="[
           'w-16 h-16 rounded-2xl flex items-center justify-center mb-5 transition-colors',
-          variant === 'danger' ? 'bg-red-50 dark:bg-red-900/20 text-red-500' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500'
+          variant === 'danger' ? 'bg-red-50 dark:bg-red-900/20 text-red-500' : 'bg-brand-50 dark:bg-brand-900/20 text-brand-500'
         ]"
       >
         <slot name="icon">
@@ -30,21 +30,20 @@
 
     <template #footer>
       <div class="flex flex-col sm:flex-row gap-3 w-full">
-        <button 
+        <BaseButton 
           @click="onCancel"
-          class="flex-1 py-4 sm:py-3 px-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-2xl transition-all active:scale-95 order-2 sm:order-1"
+          variant="secondary"
+          class="flex-1 !rounded-2xl order-2 sm:order-1"
         >
           {{ cancelText }}
-        </button>
-        <button 
+        </BaseButton>
+        <BaseButton 
           @click="onConfirm"
-          :class="[
-            'flex-1 py-4 sm:py-3 px-4 text-white font-bold rounded-2xl shadow-lg transition-all active:scale-95 order-1 sm:order-2',
-            variant === 'danger' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'
-          ]"
+          :variant="variant === 'danger' ? 'danger' : 'primary'"
+          class="flex-1 !rounded-2xl order-1 sm:order-2"
         >
           {{ confirmText }}
-        </button>
+        </BaseButton>
       </div>
     </template>
   </BaseModalLayout>
@@ -54,6 +53,7 @@
 import { computed } from 'vue'
 import { Trash2, AlertCircle, Info, Sparkles } from 'lucide-vue-next'
 import BaseModalLayout from './BaseModalLayout.vue'
+import BaseButton from './BaseButton.vue'
 
 const props = withDefaults(defineProps<{
   isOpen: boolean

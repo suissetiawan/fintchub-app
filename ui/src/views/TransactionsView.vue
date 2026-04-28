@@ -87,36 +87,40 @@
       v-if="transactionStore.pagination.totalPages > 1"
       class="flex items-center justify-center gap-4 mt-8 pb-8"
     >
-      <button
-        class="p-2 rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-800 dark:hover:bg-gray-800 transition-all dark:text-white"
+      <BaseButton
+        variant="secondary"
+        size="sm"
+        class="!p-2"
         :disabled="transactionStore.pagination.page === 1"
         @click="handlePageChange(transactionStore.pagination.page - 1)"
       >
         <ChevronLeft :size="20" />
-      </button>
+      </BaseButton>
 
       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
         Page {{ transactionStore.pagination.page }} of {{ transactionStore.pagination.totalPages }}
       </span>
 
-      <button
-        class="p-2 rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-800 dark:hover:bg-gray-800 transition-all dark:text-white"
+      <BaseButton
+        variant="secondary"
+        size="sm"
+        class="!p-2"
         :disabled="transactionStore.pagination.page === transactionStore.pagination.totalPages"
         @click="handlePageChange(transactionStore.pagination.page + 1)"
       >
         <ChevronRight :size="20" />
-      </button>
+      </BaseButton>
     </div>
     </div>
   </PullToRefresh>
 
   <!-- Floating Action Button -->
-  <button
+  <BaseButton
     @click="openNewTransaction"
-    class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+    class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 !rounded-full !p-4 shadow-lg hover:shadow-xl z-40"
   >
     <Plus :size="24" />
-  </button>
+  </BaseButton>
 
   <!-- Transaction Detail Drawer -->
   <TransactionDetailDrawer
@@ -133,6 +137,7 @@ import { useTransactionStore, type Transaction } from '@/stores/transaction'
 import { SearchX, ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-vue-next'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 import BaseListSkeleton from '@/components/common/BaseListSkeleton.vue'
 import PullToRefresh from '@/components/common/PullToRefresh.vue'

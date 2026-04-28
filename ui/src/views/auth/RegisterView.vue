@@ -30,7 +30,7 @@
             v-model="form.username"
             type="text"
             required
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             placeholder="Choose a username"
           />
         </div>
@@ -43,7 +43,7 @@
             v-model="form.email"
             type="email"
             required
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             placeholder="you@example.com"
           />
         </div>
@@ -56,7 +56,7 @@
             v-model="form.password"
             type="password"
             required
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             placeholder="••••••••"
           />
         </div>
@@ -67,25 +67,26 @@
           >
           <select
             v-model="form.role"
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           >
             <option value="USER">User</option>
             <option value="ADMIN">Admin</option>
           </select>
         </div>
 
-        <button
+        <BaseButton
           type="submit"
-          :disabled="loading"
-          class="w-full bg-blue-600 text-white py-3 mt-4 rounded-xl font-bold hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+          block
+          class="mt-4"
+          :loading="loading"
         >
-          {{ loading ? 'Creating Account...' : 'Sign Up' }}
-        </button>
+          Sign Up
+        </BaseButton>
       </form>
 
       <div class="mt-8 text-center text-sm">
         <span class="text-gray-500 dark:text-gray-400">Already have an account? </span>
-        <router-link to="/auth/login" class="text-blue-600 font-bold hover:underline"
+        <router-link to="/auth/login" class="text-brand-600 font-bold hover:underline"
           >Log In</router-link
         >
       </div>
@@ -98,6 +99,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { AlertCircle, CheckCircle } from 'lucide-vue-next'
+import BaseButton from '@/components/common/BaseButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

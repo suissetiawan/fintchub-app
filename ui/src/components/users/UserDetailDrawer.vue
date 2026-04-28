@@ -9,7 +9,7 @@
       <!-- View Mode -->
       <div class="flex flex-col items-center py-4">
         <div
-          class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center mb-4 font-black text-2xl"
+          class="w-20 h-20 rounded-full bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 flex items-center justify-center mb-4 font-black text-2xl"
         >
           {{ getInitials(user.name || user.username) }}
         </div>
@@ -22,7 +22,7 @@
         <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-2xl">
           <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Role</p>
           <div
-            class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 text-xs font-bold"
+            class="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-50 text-brand-600 dark:bg-brand-900/20 text-xs font-bold"
           >
             {{ user.role }}
           </div>
@@ -56,7 +56,7 @@
             v-model="form.username"
             type="text"
             autocomplete="off"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none dark:text-white"
             placeholder="Ex: bambang"
           />
         </div>
@@ -68,7 +68,7 @@
           <input
             v-model="form.name"
             type="text"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none dark:text-white"
             placeholder="Ex: Bambang Sugiono"
           />
         </div>
@@ -81,7 +81,7 @@
             v-model="form.email"
             type="email"
             autocomplete="off"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none dark:text-white"
             placeholder="email@example.com"
           />
         </div>
@@ -94,7 +94,7 @@
             v-model="form.password"
             type="password"
             autocomplete="new-password"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none dark:text-white"
             :placeholder="isNew ? 'Masukkan password' : 'Kosongkan jika tidak ingin diubah'"
           />
         </div>
@@ -109,7 +109,7 @@
               @click="form.role = 'USER'"
               :class="
                 form.role === 'USER'
-                  ? 'ring-2 ring-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/20'
+                  ? 'ring-2 ring-brand-600 bg-brand-50 text-brand-600 dark:bg-brand-900/20'
                   : 'bg-gray-50 dark:bg-gray-900 text-gray-500'
               "
               class="flex-1 py-2.5 font-bold rounded-xl transition-all"
@@ -121,7 +121,7 @@
               @click="form.role = 'ADMIN'"
               :class="
                 form.role === 'ADMIN'
-                  ? 'ring-2 ring-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/20'
+                  ? 'ring-2 ring-brand-600 bg-brand-50 text-brand-600 dark:bg-brand-900/20'
                   : 'bg-gray-50 dark:bg-gray-900 text-gray-500'
               "
               class="flex-1 py-2.5 font-bold rounded-xl transition-all"

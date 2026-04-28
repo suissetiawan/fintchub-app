@@ -2,9 +2,9 @@
   <div class="relative" ref="selectRef">
     <div
       @click="toggleDropdown"
-      class="flex items-center justify-between w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:ring-2 focus-within:ring-blue-600 cursor-pointer transition-all"
+      class="flex items-center justify-between w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:ring-2 focus-within:ring-brand-600 cursor-pointer transition-all"
       :class="[
-        isOpen ? 'ring-2 ring-blue-600' : '',
+        isOpen ? 'ring-2 ring-brand-600' : '',
         sizeClasses
       ]"
     >
@@ -17,7 +17,7 @@
       
       <ChevronDown
         class="text-gray-400 transition-transform duration-200 shrink-0 ml-2"
-        :class="{ 'transform rotate-180 text-blue-500': isOpen }"
+        :class="{ 'transform rotate-180 text-brand-500': isOpen }"
         :size="iconSize"
       />
     </div>
@@ -48,7 +48,7 @@
               class="relative flex items-center justify-between w-full px-4 py-2.5 cursor-pointer text-sm font-medium transition-colors"
               :class="
                 isSelected(item) 
-                  ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
+                  ? 'bg-brand-50 text-brand-600 dark:bg-brand-900/20 dark:text-brand-400' 
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
               "
               role="option"

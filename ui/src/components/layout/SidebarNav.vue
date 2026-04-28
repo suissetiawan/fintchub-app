@@ -19,7 +19,7 @@
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
             :class="[
               isActive(item.to)
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/20'
+                ? 'bg-gradient-to-r from-brand-600 to-brand-600 text-white shadow-lg shadow-brand-600/20'
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
             ]"
           >
@@ -39,7 +39,7 @@
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
               :class="[
                 isActive('/users')
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/20'
+                  ? 'bg-gradient-to-r from-brand-600 to-brand-600 text-white shadow-lg shadow-brand-600/20'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
               ]"
             >
@@ -62,7 +62,7 @@
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
       >
         <div
-          class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm"
+          class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-600 to-brand-600 flex items-center justify-center text-white font-bold text-xs shadow-sm"
         >
           {{ userInitials }}
         </div>

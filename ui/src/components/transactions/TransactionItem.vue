@@ -2,7 +2,7 @@
   <div
     class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800 transition-all"
     :class="{
-      'hover:border-blue-100 dark:hover:border-blue-900/30 cursor-pointer active:scale-[0.98]':
+      'hover:border-brand-100 dark:hover:border-brand-900/30 cursor-pointer active:scale-[0.98]':
         clickable,
     }"
     @click="clickable && $emit('click', transaction)"

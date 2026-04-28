@@ -1,6 +1,6 @@
 <template>
   <div class="relative group">
-    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 group-focus-within:text-blue-500 transition-colors">Rp</span>
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 group-focus-within:text-brand-500 transition-colors">Rp</span>
     <input
       type="text"
       inputmode="numeric"
@@ -9,7 +9,7 @@
       @blur="handleBlur"
       v-bind="$attrs"
       :class="[
-        'w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white transition-all font-black',
+        'w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none dark:text-white transition-all font-black',
         size === 'xl' ? 'text-xl' : size === 'lg' ? 'text-lg' : 'text-base'
       ]"
     />

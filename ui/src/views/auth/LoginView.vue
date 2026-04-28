@@ -38,7 +38,7 @@
             v-model="form.email"
             type="email"
             required
-            class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             placeholder="Enter your email"
           />
         </div>
@@ -52,7 +52,7 @@
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               required
-              class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white pr-10 sm:pr-12"
+              class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white pr-10 sm:pr-12"
               placeholder="••••••••"
             />
             <button
@@ -66,18 +66,18 @@
           </div>
         </div>
 
-        <button
+        <BaseButton
           type="submit"
-          :disabled="loading"
-          class="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none text-sm sm:text-base"
+          block
+          :loading="loading"
         >
-          {{ loading ? 'Logging in...' : 'Log In' }}
-        </button>
+          Log In
+        </BaseButton>
       </form>
 
       <div v-if="!authStore.usersExist" class="mt-6 sm:mt-8 text-center text-sm">
         <span class="text-gray-500 dark:text-gray-400">Don't have an account? </span>
-        <router-link to="/auth/register" class="text-blue-600 font-bold hover:underline"
+        <router-link to="/auth/register" class="text-brand-600 font-bold hover:underline"
           >Sign Up</router-link
         >
       </div>
@@ -96,6 +96,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { Eye, EyeOff, AlertCircle } from 'lucide-vue-next'
 import ThemeToggler from '@/components/common/ThemeToggler.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

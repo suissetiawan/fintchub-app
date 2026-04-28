@@ -7,12 +7,12 @@
       <div class="relative flex flex-col items-center">
         <!-- Spinner -->
         <div
-          class="h-12 w-12 rounded-full border-4 border-gray-200 border-t-blue-600 animate-spin dark:border-gray-800 dark:border-t-blue-500"
+          class="h-12 w-12 rounded-full border-4 border-gray-200 border-t-brand-600 animate-spin dark:border-gray-800 dark:border-t-brand-500"
         ></div>
 
         <!-- Background pulse ring -->
         <div
-          class="absolute top-0 h-12 w-12 rounded-full border-4 border-blue-600/20 animate-ping"
+          class="absolute top-0 h-12 w-12 rounded-full border-4 border-brand-600/20 animate-ping"
         ></div>
 
         <p class="mt-4 text-sm font-medium text-gray-700 dark:text-gray-300 animate-pulse">

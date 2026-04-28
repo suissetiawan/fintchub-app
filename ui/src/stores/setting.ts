@@ -34,6 +34,9 @@ export const useSettingStore = defineStore('setting', {
         if (!this.settings['monitor_payday_date']) {
           this.settings['monitor_payday_date'] = '25'
         }
+        if (!this.settings['color_theme']) {
+          this.settings['color_theme'] = 'blue'
+        }
       } catch (error) {
         console.error('Fetch settings failed:', error)
       } finally {

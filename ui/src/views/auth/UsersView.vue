@@ -4,12 +4,12 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h1>
-      <button
+      <BaseButton
         @click="openAddDrawer"
-        class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+        class="!p-2.5"
       >
         <UserPlus :size="20" />
-      </button>
+      </BaseButton>
     </div>
 
     <!-- User List -->
@@ -22,12 +22,12 @@
         <div
           v-for="u in userStore.users"
           :key="u.id"
-          class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-all hover:border-blue-100 dark:hover:border-blue-900/30 cursor-pointer active:scale-[0.98]"
+          class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-all hover:border-brand-100 dark:hover:border-brand-900/30 cursor-pointer active:scale-[0.98]"
           @click="openDetails(u)"
         >
           <div class="flex items-center gap-3">
             <div
-              class="h-12 w-12 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center font-black text-sm"
+              class="h-12 w-12 rounded-full bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 flex items-center justify-center font-black text-sm"
             >
               {{ getInitials(u.name || u.username) }}
             </div>
@@ -41,7 +41,7 @@
               :class="
                 u.role === 'ADMIN'
                   ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400'
-                  : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                  : 'bg-brand-50 text-brand-600 dark:bg-brand-900/20 dark:text-brand-400'
               "
               class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
             >
@@ -71,6 +71,7 @@ import { ref, onMounted } from 'vue'
 import { UserPlus, Users, ChevronRight } from 'lucide-vue-next'
 import { useUserStore, type User } from '@/stores/user'
 import UserDetailDrawer from '@/components/users/UserDetailDrawer.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
 import BaseListSkeleton from '@/components/common/BaseListSkeleton.vue'
 import PullToRefresh from '@/components/common/PullToRefresh.vue'

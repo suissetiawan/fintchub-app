@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Categories</h1>
-      <button
+      <BaseButton
         @click="openAddDrawer"
-        class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+        class="!p-2.5"
       >
         <Plus :size="20" />
-      </button>
+      </BaseButton>
     </div>
 
     <!-- Filter by type: All | Income | Expense -->
@@ -36,7 +36,7 @@
         class="col-span-full py-20 flex flex-col items-center"
       >
         <div
-          class="h-10 w-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin dark:border-gray-800"
+          class="h-10 w-10 border-4 border-gray-200 border-t-brand-600 rounded-full animate-spin dark:border-gray-800"
         ></div>
         <p class="mt-4 text-gray-500 dark:text-gray-400">Loading categories...</p>
       </div>
@@ -46,13 +46,13 @@
           v-for="cat in filteredCategories"
           :key="cat.id"
           @click="openDetails(cat)"
-          class="group px-4 py-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 hover:border-blue-100 dark:hover:border-blue-900/30 cursor-pointer active:scale-95"
+          class="group px-4 py-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 hover:border-brand-100 dark:hover:border-brand-900/30 cursor-pointer active:scale-95"
         >
           <div class="flex items-start justify-between">
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <h3
-                  class="text-lg font-black text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors"
+                  class="text-lg font-black text-gray-900 dark:text-white group-hover:text-brand-600 transition-colors"
                 >
                   {{ cat.name }}
                 </h3>
@@ -69,7 +69,7 @@
               </div>
             </div>
             <div
-              class="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 group-hover:text-blue-600 transition-colors"
+              class="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-brand-50 dark:group-hover:bg-brand-900/20 group-hover:text-brand-600 transition-colors"
             >
               <ChevronRight :size="18" />
             </div>
@@ -91,13 +91,13 @@
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {{ filterType ? 'Try another filter' : 'Start by adding your first category' }}
         </p>
-        <button
+        <BaseButton
           v-if="!filterType"
           @click="openAddDrawer"
-          class="mt-6 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+          class="mt-6 px-6"
         >
           Add Category
-        </button>
+        </BaseButton>
       </div>
     </div>
 
@@ -116,6 +116,7 @@ import { ref, computed, onMounted } from 'vue'
 import { Plus, ChevronRight, Tags } from 'lucide-vue-next'
 import { useCategoryStore, type Category } from '@/stores/category'
 import { useAuthStore } from '@/stores/auth'
+import BaseButton from '@/components/common/BaseButton.vue'
 import CategoryDetailDrawer from '@/components/categories/CategoryDetailDrawer.vue'
 
 const categoryStore = useCategoryStore()

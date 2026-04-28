@@ -144,7 +144,7 @@
           <input
             v-model="form.description"
             type="text"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none dark:text-white"
             placeholder="e.g. Lunch at Warteg"
           />
         </div>
@@ -170,7 +170,7 @@
             <flat-pickr
               v-model="form.date"
               :config="dateConfig"
-              class="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none text-gray-900 dark:text-white font-bold cursor-pointer transition-colors"
+              class="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none text-gray-900 dark:text-white font-bold cursor-pointer transition-colors"
               placeholder="Select date"
             />
           </div>

@@ -4,25 +4,28 @@
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">Budget</h1>
-        <div v-if="periodRange" class="flex items-center gap-1.5 mt-1 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full w-fit">
+        <div v-if="periodRange" class="flex items-center gap-1.5 mt-1 text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded-full w-fit">
           <Calendar :size="12" stroke-width="3" />
           <span class="text-[10px] font-bold uppercase tracking-wider">{{ periodRange }}</span>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <BaseButton
           @click="confirmAutoGenerate"
-          class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95 text-sm sm:text-base"
+          variant="secondary"
+          class="flex-1 sm:flex-none"
           title="Salin dari bulan lalu (atau template jika belum ada data)"
         >
-          <Sparkles :size="18" /> Auto Generate
-        </button>
-        <button
+          <template #icon-left><Sparkles :size="18" /></template>
+          Auto Generate
+        </BaseButton>
+        <BaseButton
           @click="openAddDrawer"
-          class="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all text-sm sm:text-base"
+          class="flex-1 sm:flex-none"
         >
-          <Plus :size="20" /> Tambah Budget
-        </button>
+          <template #icon-left><Plus :size="20" /></template>
+          Tambah Budget
+        </BaseButton>
       </div>
     </div>
 
@@ -52,7 +55,7 @@
         <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ringkasan Alokasi</h3>
         <span 
           class="text-xs font-bold px-2 py-0.5 rounded-full"
-          :class="remainingToAllocate < 0 ? 'bg-red-100 text-red-600 dark:bg-red-900/30' : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30'"
+          :class="remainingToAllocate < 0 ? 'bg-red-100 text-red-600 dark:bg-red-900/30' : 'bg-brand-100 text-brand-600 dark:bg-brand-900/30'"
         >
           {{ remainingToAllocate < 0 ? 'Over Allocated' : 'Balanced' }}
         </span>
@@ -65,7 +68,7 @@
         </div>
         <div class="text-right">
           <p class="text-[10px] text-gray-400 uppercase font-bold">Total Alokasi</p>
-          <p class="text-lg font-bold text-blue-600">Rp {{ formatNumber(totalAllocated) }}</p>
+          <p class="text-lg font-bold text-brand-600">Rp {{ formatNumber(totalAllocated) }}</p>
         </div>
       </div>
 
@@ -80,7 +83,7 @@
         <div class="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
           <div 
             class="h-full rounded-full transition-all duration-500"
-            :class="allocationPercentage > 100 ? 'bg-red-500' : 'bg-blue-500'"
+            :class="allocationPercentage > 100 ? 'bg-red-500' : 'bg-brand-500'"
             :style="{ width: Math.min(allocationPercentage, 100) + '%' }"
           />
         </div>
@@ -187,12 +190,12 @@
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 text-center max-w-xs">
         Buat budget per kategori untuk memantau pengeluaran Anda
       </p>
-      <button
+      <BaseButton
         @click="openAddDrawer"
-        class="mt-6 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+        class="mt-6 px-6"
       >
         Tambah Budget
-      </button>
+      </BaseButton>
     </div>
     </div>
   </PullToRefresh>
@@ -243,6 +246,7 @@ import { useSettingStore } from '@/stores/setting'
 import { useUiStore } from '@/stores/ui'
 import BudgetFormDrawer from '@/components/budget/BudgetFormDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import BaseConfirmDialog from '@/components/common/BaseConfirmDialog.vue'
 import BaseSelect from '@/components/common/BaseSelect.vue'
 import PullToRefresh from '@/components/common/PullToRefresh.vue'

@@ -6,7 +6,7 @@
       <!-- Left: Profile & Greeting -->
       <router-link to="/profile" class="flex items-center gap-3 active:scale-95 transition-transform">
         <div
-          class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm"
+          class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-600 to-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-sm"
         >
           {{ userInitials }}
         </div>

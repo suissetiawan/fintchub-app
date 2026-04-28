@@ -5,7 +5,7 @@
     <div class="flex items-start justify-between">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">Dashboard</h1>
-        <div v-if="periodRange" class="flex items-center gap-1.5 mt-1 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full w-fit">
+        <div v-if="periodRange" class="flex items-center gap-1.5 mt-1 text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded-full w-fit">
           <Calendar :size="12" stroke-width="3" />
           <span class="text-[10px] font-bold uppercase tracking-wider">{{ periodRange }}</span>
         </div>
@@ -50,7 +50,7 @@
               Rp {{ formatNumber(dashboardStore.summary.balance) }}
             </h3>
           </div>
-          <div class="p-3 bg-blue-50 text-blue-600 rounded-xl dark:bg-blue-900/20">
+          <div class="p-3 bg-brand-50 text-brand-600 rounded-xl dark:bg-brand-900/20">
             <Wallet :size="24" />
           </div>
         </div>
@@ -136,7 +136,7 @@
         <router-link
           v-else
           to="/budget"
-          class="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full text-xs font-bold transition-all active:scale-95 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+          class="flex items-center gap-1 px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 rounded-full text-xs font-bold transition-all active:scale-95 dark:bg-brand-900/20 dark:hover:bg-brand-900/30 dark:text-brand-400"
         >
           Lihat Semua <ChevronRight :size="14" />
         </router-link>
@@ -191,7 +191,7 @@
         <div class="flex items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
           <button
             @click="breakdownType = 'EXPENSE'"
-            :class="breakdownType === 'EXPENSE' ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600 font-bold' : 'text-gray-500'"
+            :class="breakdownType === 'EXPENSE' ? 'bg-white dark:bg-gray-700 shadow-sm text-brand-600 font-bold' : 'text-gray-500'"
             class="px-3 py-1 text-[11px] rounded-lg transition-all"
           >
             Expense
@@ -231,7 +231,7 @@
         <router-link
           v-else
           to="/transactions"
-          class="flex items-center gap-1 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full text-xs font-bold transition-all active:scale-95 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+          class="flex items-center gap-1 px-4 py-2 bg-brand-50 hover:bg-brand-100 text-brand-600 rounded-full text-xs font-bold transition-all active:scale-95 dark:bg-brand-900/20 dark:hover:bg-brand-900/30 dark:text-brand-400"
         >
           View All <ChevronRight :size="14" />
         </router-link>
@@ -252,12 +252,12 @@
 </PullToRefresh>
 
 <!-- Floating Action Button -->
-<button
+<BaseButton
   @click="openNewTransaction"
-  class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 z-40"
+  class="hidden md:flex fixed bottom-24 right-6 md:bottom-10 md:right-10 !rounded-full !p-4 shadow-lg hover:shadow-xl z-40"
 >
   <Plus :size="24" />
-</button>
+</BaseButton>
 
 <!-- Transaction Detail Drawer -->
 <TransactionDetailDrawer
@@ -282,6 +282,7 @@ import { getMonitoringDateRange } from '@/utils/dateHelper'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import TransactionDetailDrawer from '@/components/transactions/TransactionDetailDrawer.vue'
 import BaseSkeleton from '@/components/common/BaseSkeleton.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import BaseListSkeleton from '@/components/common/BaseListSkeleton.vue'
 import PullToRefresh from '@/components/common/PullToRefresh.vue'
 

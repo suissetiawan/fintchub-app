@@ -2,12 +2,13 @@
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-center gap-4">
-      <button
+      <BaseButton
         @click="$router.back()"
-        class="w-10 h-10 flex items-center justify-center rounded-xl bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 shadow-sm transition-all active:scale-95 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
+        variant="secondary"
+        class="!p-2.5"
       >
         <ChevronLeft :size="20" />
-      </button>
+      </BaseButton>
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Budget Template</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400">Atur budget standar untuk auto-generate</p>
@@ -20,16 +21,19 @@
           <p class="text-sm text-gray-500 dark:text-gray-400 max-w-md order-2 sm:order-1">
             Item di bawah ini akan otomatis dibuat setiap bulan saat Anda menggunakan fitur Auto Generate.
           </p>
-          <button 
+          <BaseButton 
             @click="addTemplate"
-            class="flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 rounded-xl font-bold text-sm hover:bg-blue-100 transition-all active:scale-95 order-1 sm:order-2"
+            variant="secondary"
+            size="sm"
+            class="order-1 sm:order-2"
           >
-            <Plus :size="18" /> Tambah Item
-          </button>
+            <template #icon-left><Plus :size="18" /></template>
+            Tambah Item
+          </BaseButton>
         </div>
 
         <div class="space-y-4">
-          <div v-for="(item, index) in localTemplates" :key="item._uId" class="group relative p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all hover:border-blue-200 dark:hover:border-blue-900/30">
+          <div v-for="(item, index) in localTemplates" :key="item._uId" class="group relative p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all hover:border-brand-200 dark:hover:border-brand-900/30">
             <div class="flex flex-col sm:flex-row gap-4 sm:items-end">
               <!-- Category Selector -->
               <div class="flex-1 space-y-1.5">
@@ -37,14 +41,14 @@
                 <div class="relative group/select">
                   <select 
                     v-model="item.categoryId"
-                    class="appearance-none w-full px-4 py-2.5 bg-white dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none text-sm font-bold text-gray-900 dark:text-white cursor-pointer transition-all shadow-sm"
+                    class="appearance-none w-full px-4 py-2.5 bg-white dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-brand-600 outline-none text-sm font-bold text-gray-900 dark:text-white cursor-pointer transition-all shadow-sm"
                   >
                     <option v-for="cat in categoryStore.categories" :key="cat.id" :value="cat.id">
                       {{ cat.name }}
                     </option>
                   </select>
                   <ChevronDown
-                    class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover/select:text-blue-500 transition-colors"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover/select:text-brand-500 transition-colors"
                     :size="18"
                   />
                 </div>
@@ -87,13 +91,13 @@
         </div>
 
         <div class="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
-          <button 
+          <BaseButton 
             @click="saveTemplates"
-            class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50"
-            :disabled="loading"
+            class="px-8"
+            :loading="loading"
           >
-            {{ loading ? 'Menyimpan...' : 'Simpan Perubahan' }}
-          </button>
+            Simpan Perubahan
+          </BaseButton>
         </div>
       </div>
     </div>
@@ -107,6 +111,7 @@ import { useBudgetStore, type BudgetTemplate } from '@/stores/budget'
 import { useCategoryStore } from '@/stores/category'
 import { useRouter } from 'vue-router'
 import BaseAmountInput from '@/components/common/BaseAmountInput.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import { getDefaultAmount } from '@/utils/budgetHelper'
 
 const budgetStore = useBudgetStore()
