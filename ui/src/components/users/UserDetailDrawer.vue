@@ -86,15 +86,16 @@
           />
         </div>
 
-        <div v-if="isNew">
-          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2"
-            >Password</label
-          >
+        <div>
+          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+            Password {{ isNew ? '' : '(Opsional)' }}
+          </label>
           <input
             v-model="form.password"
-            type="text"
+            type="password"
             autocomplete="new-password"
             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-none rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white"
+            :placeholder="isNew ? 'Masukkan password' : 'Kosongkan jika tidak ingin diubah'"
           />
         </div>
 
@@ -226,12 +227,16 @@ const handleSave = async () => {
     if (isNew.value) {
       await userStore.createUser(form.value)
     } else if (props.user?.id) {
-      await userStore.updateUser(props.user.id, {
+      const payload: any = {
         username: form.value.username,
         name: form.value.name,
         email: form.value.email,
         role: form.value.role,
-      })
+      }
+      if (form.value.password) {
+        payload.password = form.value.password
+      }
+      await userStore.updateUser(props.user.id, payload)
     }
     close()
   } catch (error) {

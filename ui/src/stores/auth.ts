@@ -155,6 +155,18 @@ export const useAuthStore = defineStore('auth', {
         uiStore.setLoading(false)
       }
     },
+    async changePassword(data: any) {
+      const uiStore = useUiStore()
+      uiStore.setLoading(true, 'Updating password...')
+      try {
+        const response = await api.put('api/users/change-password', data)
+        return response.data
+      } catch (error) {
+        throw error
+      } finally {
+        uiStore.setLoading(false)
+      }
+    },
     async checkSetupStatus() {
       try {
         const response = await api.get('/auth/setup-check')

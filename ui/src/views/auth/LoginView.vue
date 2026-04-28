@@ -12,7 +12,7 @@
       <div class="w-10 h-10 flex items-center justify-center animate-bounce-subtle shrink-0">
         <img src="/plain_logo.png" alt="Fincthub Logo" class="w-full h-full object-contain" />
       </div>
-      <span class="text-2xl font-black tracking-wider text-gray-900 dark:text-white uppercase">Fincthub</span>
+      <span class="text-2xl font-black tracking-tight text-gray-900 dark:text-white uppercase">Fincthub</span>
     </div>
 
     <div
@@ -21,6 +21,12 @@
       <div class="text-center mb-6 sm:mb-8">
         <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
         <p class="text-xs sm:text-sm text-gray-500 mt-1 dark:text-gray-400">Log in to your account</p>
+      </div>
+
+      <!-- Error Message Banner -->
+      <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl border border-red-100 dark:border-red-900/30 text-sm font-medium flex items-start gap-3">
+        <AlertCircle :size="18" class="shrink-0 mt-0.5" />
+        <p>{{ errorMessage }}</p>
       </div>
 
       <form @submit.prevent="handleLogin" class="space-y-5 sm:space-y-6">
@@ -88,7 +94,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { Eye, EyeOff } from 'lucide-vue-next'
+import { Eye, EyeOff, AlertCircle } from 'lucide-vue-next'
 import ThemeToggler from '@/components/common/ThemeToggler.vue'
 
 const router = useRouter()
@@ -101,14 +107,16 @@ const form = ref({
 
 const loading = ref(false)
 const showPassword = ref(false)
+const errorMessage = ref('')
 
 const handleLogin = async () => {
   loading.value = true
+  errorMessage.value = ''
   try {
     await authStore.login(form.value)
     router.push('/')
   } catch (error: any) {
-    alert(error.response?.data?.message || 'Login failed')
+    errorMessage.value = error.response?.data?.message || 'Login failed'
   } finally {
     loading.value = false
   }

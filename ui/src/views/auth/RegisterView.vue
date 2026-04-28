@@ -10,6 +10,17 @@
         <p class="text-gray-500 mt-2 dark:text-gray-400">Join FinTracker today</p>
       </div>
 
+      <!-- Messages Banners -->
+      <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl border border-red-100 dark:border-red-900/30 text-sm font-medium flex items-start gap-3">
+        <AlertCircle :size="18" class="shrink-0 mt-0.5" />
+        <p>{{ errorMessage }}</p>
+      </div>
+
+      <div v-if="successMessage" class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl border border-green-100 dark:border-green-900/30 text-sm font-medium flex items-start gap-3">
+        <CheckCircle :size="18" class="shrink-0 mt-0.5" />
+        <p>{{ successMessage }}</p>
+      </div>
+
       <form @submit.prevent="handleRegister" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
@@ -86,6 +97,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { AlertCircle, CheckCircle } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -98,15 +110,21 @@ const form = ref({
 })
 
 const loading = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
 
 const handleRegister = async () => {
   loading.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
   try {
     await authStore.register(form.value)
-    alert('Account created! Please log in.')
-    router.push('/auth/login')
+    successMessage.value = 'Account created! Redirecting to login...'
+    setTimeout(() => {
+      router.push('/auth/login')
+    }, 2000)
   } catch (error: any) {
-    alert(error.response?.data?.message || 'Registration failed')
+    errorMessage.value = error.response?.data?.message || 'Registration failed'
   } finally {
     loading.value = false
   }

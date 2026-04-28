@@ -73,6 +73,12 @@
           <Edit2 :size="18" /> Edit Profile
         </button>
         <button
+          @click="openChangePasswordDrawer"
+          class="w-full py-3 sm:py-4 bg-cyan-50 hover:bg-cyan-100 text-cyan-600 dark:bg-cyan-900/20 dark:hover:bg-cyan-900/30 font-black rounded-xl sm:rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base"
+        >
+          <Key :size="18" /> Ubah Password
+        </button>
+        <button
           @click="handleLogout"
           class="w-full py-3 sm:py-4 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-900/10 dark:hover:bg-red-900/20 font-black rounded-xl sm:rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base"
         >
@@ -124,6 +130,59 @@
         </div>
       </div>
     </DetailDrawerLayout>
+
+    <!-- Change Password Drawer -->
+    <DetailDrawerLayout
+      :is-open="isPasswordDrawerOpen"
+      title="Ubah Password"
+      @close="closeChangePasswordDrawer"
+      height-class="h-auto max-h-[90vh]"
+    >
+      <div class="space-y-5">
+        <div v-if="passwordError" class="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold">
+          {{ passwordError }}
+        </div>
+        
+        <div>
+          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Password Lama</label>
+          <input
+            v-model="passwordForm.oldPassword"
+            type="password"
+            class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white text-sm"
+            placeholder="••••••••"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Password Baru</label>
+          <input
+            v-model="passwordForm.newPassword"
+            type="password"
+            class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white text-sm"
+            placeholder="Min. 6 karakter"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Konfirmasi Password Baru</label>
+          <input
+            v-model="passwordForm.confirmPassword"
+            type="password"
+            class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none dark:text-white text-sm"
+            placeholder="Ulangi password baru"
+          />
+        </div>
+        
+        <div class="flex flex-col gap-3 pt-2">
+          <BaseButton 
+            @click="handleChangePassword" 
+            :disabled="!passwordForm.oldPassword || !passwordForm.newPassword || passwordForm.newPassword !== passwordForm.confirmPassword || passwordForm.newPassword.length < 6" 
+            block
+          >
+            Update Password
+          </BaseButton>
+          <BaseButton @click="closeChangePasswordDrawer" variant="secondary" block> Batal </BaseButton>
+        </div>
+      </div>
+    </DetailDrawerLayout>
   </template>
 </div>
 </template>
@@ -131,7 +190,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { LogOut, Edit2 } from 'lucide-vue-next'
+import { LogOut, Edit2, Key } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import DetailDrawerLayout from '@/components/layout/DetailDrawerLayout.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -142,6 +201,39 @@ const router = useRouter()
 
 const isEditDrawerOpen = ref(false)
 const editForm = ref({ username: '', name: '', email: '' })
+
+const isPasswordDrawerOpen = ref(false)
+const passwordError = ref('')
+const passwordForm = ref({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+const openChangePasswordDrawer = () => {
+  passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' }
+  passwordError.value = ''
+  isPasswordDrawerOpen.value = true
+}
+
+const closeChangePasswordDrawer = () => {
+  isPasswordDrawerOpen.value = false
+}
+
+const handleChangePassword = async () => {
+  passwordError.value = ''
+  try {
+    await authStore.changePassword({
+      oldPassword: passwordForm.value.oldPassword,
+      newPassword: passwordForm.value.newPassword
+    })
+    closeChangePasswordDrawer()
+    // Success toast or alert would be nice here
+  } catch (error: any) {
+    passwordError.value = error.response?.data?.message || 'Gagal mengubah password.'
+    console.error('Change password failed:', error)
+  }
+}
 
 const openEditDrawer = () => {
   editForm.value = {
