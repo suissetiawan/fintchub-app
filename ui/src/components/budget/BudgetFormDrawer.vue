@@ -73,6 +73,8 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BaseAmountInput from '@/components/common/BaseAmountInput.vue'
 import BaseSelect from '@/components/common/BaseSelect.vue'
 
+import { getDefaultAmount } from '@/utils/budgetHelper'
+
 const props = defineProps<{
   isOpen: boolean
   budget: BudgetWithUsage | null
@@ -139,6 +141,11 @@ watch(
   (id) => {
     const c = categoryStore.categories.find((x) => x.id === id)
     form.value.categoryName = c?.name || ''
+    
+    // Prefill amount for new budget if current amount is 0
+    if (!props.budget && form.value.amount === 0 && c) {
+      form.value.amount = getDefaultAmount(c.name)
+    }
   }
 )
 

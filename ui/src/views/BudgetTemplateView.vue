@@ -107,6 +107,7 @@ import { useBudgetStore, type BudgetTemplate } from '@/stores/budget'
 import { useCategoryStore } from '@/stores/category'
 import { useRouter } from 'vue-router'
 import BaseAmountInput from '@/components/common/BaseAmountInput.vue'
+import { getDefaultAmount } from '@/utils/budgetHelper'
 
 const budgetStore = useBudgetStore()
 const categoryStore = useCategoryStore()
@@ -128,20 +129,23 @@ onMounted(async () => {
     _uId: generateId() 
   }))
   
-  // If empty, auto-populate with all categories
+  // If empty, auto-populate with all categories and prefill common amounts
   if (localTemplates.value.length === 0) {
-    localTemplates.value = categoryStore.categories.map(cat => ({
-      categoryId: cat.id,
-      amount: 0,
-      _uId: generateId()
-    }))
+    localTemplates.value = categoryStore.categories
+      .filter(cat => cat.type === 'EXPENSE')
+      .map(cat => ({
+        categoryId: cat.id,
+        amount: getDefaultAmount(cat.name),
+        _uId: generateId()
+      }))
   }
 })
 
 function addTemplate() {
+  const cat = categoryStore.categories.find(c => c.type === 'EXPENSE') || categoryStore.categories[0]
   localTemplates.value.push({
-    categoryId: categoryStore.categories[0]?.id || 0,
-    amount: 0,
+    categoryId: cat?.id || 0,
+    amount: cat ? getDefaultAmount(cat.name) : 0,
     _uId: generateId()
   })
 }
